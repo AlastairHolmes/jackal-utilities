@@ -1,2 +1,2 @@
 # jackal-utilities
-A small set of utilities I used to produce my own game engine; These originally where built on EASTL, but I'm now using STL and transitioning functionality as I require it for other projects.
+A small set of utilities built on the STL. These originally where built-on [EASTL](https://github.com/electronicarts/EASTL), but now use the STL. I will transition functionality as I require it for other projects.
