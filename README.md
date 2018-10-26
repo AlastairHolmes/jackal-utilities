@@ -54,18 +54,17 @@ This project uses Doxygen to generate its documentation, this can be done by bui
 
 ## Containers
 Our containers are very similar to STL's and are mostly just wrappers (That adapt the allocator), there are some differences:
-	- swap() is not guarenteed to not invalidate iterators. swap() will invalidate iterators if and only if the two container's allocators are non-propagating on swap (propagate_on_container_swap = std::false_type) and not equal. In STL this is undefined behaviour; most implementations will assert in this case. This modification allows proper use of non-propagating statefuls allocators without potentially undefined behaviour. The only down side is the swap() function is no longer noexcept; the allocator can throw during swap, swap will throw.
-	- containers have the addition functions swap_value(container_type<otherAllocatorType>&), assign_value(const container_type<otherAllocatorType>&), assign_value(container_type<otherAllocatorType>&&). These function are equivalent to the swap(), copy assignment, and move assignment except they do not propagate the container's allocators even if the allocators set propagation true. Note these function allow swap and assignment between containers of the same template that use different types of allocator (Which cannot be done with STL or EASTL).
-	- STL AllocatorAwareContainers have a copy and move constructor:
++ swap() is not guarenteed to not invalidate iterators. swap() will invalidate iterators if and only if the two container's allocators are non-propagating on swap (propagate_on_container_swap = std::false_type) and not equal. In STL this is undefined behaviour; most implementations will assert in this case. This modification allows proper use of non-propagating statefuls allocators without potentially undefined behaviour. The only down side is the swap() function is no longer noexcept; this is because if the allocators are non-propagating and not equal to do the swap new memory must be allocated, and the allocate() function is not noexcept.
++ containers have the addition functions swap_value(container_type<otherAllocatorType>&), assign_value(const container_type<otherAllocatorType>&), assign_value(container_type<otherAllocatorType>&&). These function are equivalent to the swap(), copy assignment, and move assignment except they do not propagate the container's allocators even if the allocators set propagation true. Note these function allow swap and assignment between containers of the same template that use different types of allocator (Which cannot be done with STL or EASTL).
++ STL AllocatorAwareContainers have a copy and move constructor that do copy and move construction as normal except using the p_allocator you specified rather than the allocator in p_other:
 	```
 	container_type(const container_type& p_other, const allocatorType& p_allocator);
 	container_type(container_type&& p_other, const allocatorType& p_allocator);
 	```
-	These do copy and move construction as normal except using the p_allocator you specified rather than the allocator in p_other. We change these to:
+	Our containers replace these with generic versions that allow move and copy construction from instances that use different allocator types from the constructed instance (Which cannot be done with STL or EASTL).
 	```
 	template <class otherAllocatorType>
 	container_type(const container_type<otherAllocatorType>& p_other, const allocatorType& p_allocator);	
 	template <class otherAllocatorType>
 	container_type(container_type<otherAllocatorType>&& p_other, const allocatorType& p_allocator);
 	```
-	This allows containers to be constructed using containers that have different allocator types (Which cannot be done with STL or EASTL).
