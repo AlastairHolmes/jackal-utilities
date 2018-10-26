@@ -1,3 +1,10 @@
+/*!
+	@file		any_derived.h
+	@author		Alastair Holmes
+	@date		26/10/2018
+ */
+
+
 #ifndef JKUTIL_ANY_DERIVED_H
 #define JKUTIL_ANY_DERIVED_H
 

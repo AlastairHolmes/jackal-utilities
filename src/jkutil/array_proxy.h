@@ -1,3 +1,10 @@
+/*!
+	@file		array_proxy.h
+	@author		Alastair Holmes
+	@date		26/10/2018
+ */
+
+
 #ifndef JKUTIL_ARRAY_PROXY_H
 #define JKUTIL_ARRAY_PROXY_H
 

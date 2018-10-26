@@ -1,3 +1,10 @@
+/*!
+	@file		allocator_reference.h
+	@author		Alastair Holmes
+	@date		26/10/2018
+ */
+
+
 #ifndef JKUTIL_ALLOCATOR_REFERENCE_H
 #define JKUTIL_ALLOCATOR_REFERENCE_H
 

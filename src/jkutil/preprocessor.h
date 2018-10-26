@@ -1,3 +1,10 @@
+/*!
+	@file		preprocessor.h
+	@author		Alastair Holmes
+	@date		26/10/2018
+ */
+
+
 #ifndef JKUTIL_PREPROCESSOR_H
 #define JKUTIL_PREPROCESSOR_H
 

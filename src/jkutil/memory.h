@@ -1,3 +1,10 @@
+/*!
+	@file		memory.h
+	@author		Alastair Holmes
+	@date		26/10/2018
+ */
+
+
 #ifndef JKUTIL_MEMORY_H
 #define JKUTIL_MEMORY_H
 

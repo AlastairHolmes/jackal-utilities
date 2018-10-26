@@ -1,3 +1,9 @@
+/*!
+	@file		allocator_pointer.h
+	@author		Alastair Holmes
+	@date		26/10/2018
+ */
+
 #ifndef JKUTIL_ALLOCATOR_POINTER_H
 #define JKUTIL_ALLOCATOR_POINTER_H
 
