@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project("jackal-utilities")
 
-find_package(common-cmake REQUIRED)
+include(${CMAKE_CURRENT_LIST_DIR}/ext/common-cmake/common.cmake)
 
 # Set the default install location.
 SetDefaultInstallPrefix("${CMAKE_SOURCE_DIR}/bin")
