@@ -206,19 +206,39 @@ namespace jkutil
 		return m_size;
 	}
 
+	template <class allocatorType>
+	deallocate_guard<allocatorType> make_deallocate_guard(allocatorType& p_allocator, void* p_memory, size_t p_size, bool p_enabled = true)
+	{
+		return deallocate_guard<allocatorType>(p_allocator, p_memory, p_size, p_enabled);
+	}
+
+	template <class allocatorType>
+	allocate_guard<allocatorType> make_allocate_guard(allocatorType& p_allocator, size_t p_size, size_t p_alignment, bool p_enabled = true)
+	{
+		return allocate_guard<allocatorType>(p_allocator, p_size, p_alignment, p_enabled);
+	}
+
+	/*!
+		@brief Allocates memory for and constructs an object.
+		@details This will NOT leak memory if the constructor throws.
+	*/
 	template <class constructType, class allocatorType, class... argumentTypes>
 	inline constructType* create(allocatorType& p_allocator, argumentTypes&&... p_arguments)
 	{
-		allocate_guard<allocatorType> memory = allocate_guard<allocatorType>(p_allocator, sizeof(constructType), alignof(constructType));
+		allocate_guard<allocatorType> memory = make_allocate_guard(p_allocator, sizeof(constructType), alignof(constructType));
 		jkutil::construct<constructType>(memory.data(), std::forward<argumentTypes>(p_arguments)...);
 		memory.disable();
 		return static_cast<constructType*>(memory.data());
 	}
 
+	/*!
+		@brief Destructs an object and deallocates its memory.
+		@details This will NOT leak memory if the destructor throws.
+	*/
 	template <class deconstructType, class allocatorType>
 	inline void destroy(allocatorType& p_allocator, deconstructType* p_element)
 	{
-		deallocate_guard<allocatorType> guard(p_allocator, p_element, sizeof(deconstructType));
+		auto guard = make_deallocate_guard(p_allocator, p_element, sizeof(deconstructType));
 		jkutil::destruct<deconstructType>(p_element);
 	}
 
