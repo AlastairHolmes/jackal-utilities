@@ -4,7 +4,6 @@
 	@date		26/10/2018
  */
 
-
 #ifndef JKUTIL_ARRAY_PROXY_H
 #define JKUTIL_ARRAY_PROXY_H
 
@@ -15,6 +14,17 @@
 namespace jkutil
 {
 
+	/*!
+		@class array_proxy
+
+		@brief The purpose of array_proxy is to allow easy passing and usage (throught iterators) of raw arrays.
+
+		@note Out of range accesses will throw a std::out_of_range.
+		@note The move constructor and assignment resets the moved instance, this is for safety purposes, as it makes it harder to
+		accidently refer to resources you didn't intend when moving.
+
+		@tparam elementType The type of the elements in the array.
+	*/
 	template <typename elementType>
 	class array_proxy
 	{

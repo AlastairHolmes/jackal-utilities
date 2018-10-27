@@ -4,7 +4,6 @@
 	@date		26/10/2018
  */
 
-
 #ifndef JKUTIL_ALLOCATOR_REFERENCE_H
 #define JKUTIL_ALLOCATOR_REFERENCE_H
 
@@ -14,6 +13,17 @@
 namespace jkutil
 {
 
+	/*!
+		@class allocator_reference
+
+		@brief An allocator that acts as reference to another allocator.
+
+		@details This class is not entirely like a reference, as it is not const and its
+		assignment operators will change what it references (Unlike a real reference).
+
+		@tparam allocatorType The type of the referenced allocator.
+		@tparam propagateReference Whether the reference is propagated on container swap and assignment.
+	*/
 	template <class allocatorType, bool propagateReference = false>
 	class allocator_reference
 	{
@@ -31,15 +41,28 @@ namespace jkutil
 
 	public:
 
-		allocator_reference& operator=(const allocator_reference&) = default;
-		allocator_reference& operator=(allocator_reference&&) = default;
+		allocator_reference& operator=(const allocator_reference& p_rhs) = default;
+		allocator_reference& operator=(allocator_reference&& p_rhs) = default;
 
+		/*! @brief Deep equality comparison.*/
 		bool operator==(const allocator_reference& p_rhs);
+
+		/*! @brief Deep inequality comparison.*/
 		bool operator!=(const allocator_reference& p_rhs);
 
+		/*!
+			@brief Allocates memory using the referenced allocator.
+			@details Simply pass through any allocation requests to the referenced allocator.
+		*/
 		void* allocate(size_t p_size, size_t p_alignment);
+
+		/*!
+			@brief Dealocates memory using the referenced allocator.
+			@details Simply pass through any deallocation requests to the referenced allocator.
+		*/
 		void deallocate(void* p_ptr, size_t p_size);
 
+		/*! @brief Gets the current referenced allocator. */
 		allocatorType& get_internal_allocator() const;
 
 	private:

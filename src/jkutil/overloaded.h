@@ -4,7 +4,6 @@
 	@date		26/10/2018
  */
 
-
 #ifndef JKUTIL_OVERLOADED_H
 #define JKUTIL_OVERLOADED_H
 

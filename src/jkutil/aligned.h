@@ -9,7 +9,6 @@
 
 #include <jkutil\bitwise.h>
 
-/// @brief The project's main namespace.
 namespace jkutil
 {
 
@@ -18,7 +17,7 @@ namespace jkutil
 
 		@brief A simple object wrapper for safely over-aligning objects.
 
-		@details This struct's original purpose was to allow creation of
+		@details This struct's original purpose was to allow the creation of
 		arrays of overaligned objects, which can't be done with \c alignas().
 		The wrapped object will always at a minimum be aligned to \c alignof(elementType),
 		even if this is more than the specified \c elementAlignment.
@@ -39,22 +38,13 @@ namespace jkutil
 		/// @brief Default constructs the member #value.
 		aligned() = default;
 
-		/// @brief Copy constructs the member \c value with \p p_element
 		aligned(const elementType& p_element);
-
-		/// @brief Move constructs the member \c value with \p p_element
 		aligned(elementType&& p_element);
 
-		/// @brief Default copy constructor.
 		aligned(const aligned&) = default;
-
-		/// @brief Default move constructor.
 		aligned(aligned&&) = default;
 
-		/// @brief Default copy assignment.
 		aligned& operator=(const aligned&) = default;
-
-		/// @brief Default move assignment.
 		aligned& operator=(aligned&&) = default;
 
 		/// @brief The public member variable \c value is over-aligned by atleast the specified \c elementAlignment.

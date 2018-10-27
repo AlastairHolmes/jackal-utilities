@@ -4,7 +4,6 @@
 	@date		26/10/2018
  */
 
-
 #ifndef JKUTIL_ASSERT_H
 #define JKUTIL_ASSERT_H
 
