@@ -21,10 +21,10 @@ namespace jkutil
 		@details This class is not entirely like a reference, as it is not const and its
 		assignment operators will change what it references (Unlike a real reference).
 
-		@tparam allocatorType The type of the referenced allocator.
+		@tparam storableAllocatorType The type of the referenced allocator.
 		@tparam propagateReference Whether the reference is propagated on container swap and assignment.
 	*/
-	template <class allocatorType, bool propagateReference = false>
+	template <class storableAllocatorType, bool propagateReference = false>
 	class allocator_reference
 	{
 	public:
@@ -34,7 +34,7 @@ namespace jkutil
 		using propagate_on_container_swap = std::bool_constant<propagateReference>;
 		using is_always_equal = std::false_type;
 
-		allocator_reference(allocatorType& p_allocator);
+		allocator_reference(storableAllocatorType& p_allocator);
 
 		allocator_reference(const allocator_reference&) = default;
 		allocator_reference(allocator_reference&&) = default;
@@ -63,22 +63,22 @@ namespace jkutil
 		void deallocate(void* p_ptr, size_t p_size);
 
 		/*! @brief Gets the current referenced allocator. */
-		allocatorType& get_internal_allocator() const;
+		storableAllocatorType& get_internal_allocator() const;
 
 	private:
 
-		allocatorType* m_allocator;
+		storableAllocatorType* m_allocator;
 
 	};
 
-	template<class allocatorType, bool propagateReference>
-	inline allocator_reference<allocatorType, propagateReference>::allocator_reference(allocatorType& p_allocator)
+	template<class storableAllocatorType, bool propagateReference>
+	inline allocator_reference<storableAllocatorType, propagateReference>::allocator_reference(storableAllocatorType& p_allocator)
 		: m_allocator(&p_allocator)
 	{
 	}
 
-	template<class allocatorType, bool propagateReference>
-	inline bool allocator_reference<allocatorType, propagateReference>::operator==(const allocator_reference & p_rhs)
+	template<class storableAllocatorType, bool propagateReference>
+	inline bool allocator_reference<storableAllocatorType, propagateReference>::operator==(const allocator_reference & p_rhs)
 	{
 		if (m_allocator && p_rhs.m_allocator)
 		{
@@ -90,8 +90,8 @@ namespace jkutil
 		}
 	}
 
-	template<class allocatorType, bool propagateReference>
-	inline bool allocator_reference<allocatorType, propagateReference>::operator!=(const allocator_reference & p_rhs)
+	template<class storableAllocatorType, bool propagateReference>
+	inline bool allocator_reference<storableAllocatorType, propagateReference>::operator!=(const allocator_reference & p_rhs)
 	{
 		if (m_allocator && p_rhs.m_allocator)
 		{
@@ -103,20 +103,20 @@ namespace jkutil
 		}
 	}
 
-	template<class allocatorType, bool propagateReference>
-	inline void* allocator_reference<allocatorType, propagateReference>::allocate(size_t p_size, size_t p_alignment)
+	template<class storableAllocatorType, bool propagateReference>
+	inline void* allocator_reference<storableAllocatorType, propagateReference>::allocate(size_t p_size, size_t p_alignment)
 	{
 		return m_allocator->allocate(p_size, p_alignment);
 	}
 
-	template<class allocatorType, bool propagateReference>
-	inline void allocator_reference<allocatorType, propagateReference>::deallocate(void * p_ptr, size_t p_size)
+	template<class storableAllocatorType, bool propagateReference>
+	inline void allocator_reference<storableAllocatorType, propagateReference>::deallocate(void * p_ptr, size_t p_size)
 	{
 		m_allocator->deallocate(p_ptr, p_size);
 	}
 
-	template<class allocatorType, bool propagateReference>
-	inline allocatorType & allocator_reference<allocatorType, propagateReference>::get_internal_allocator() const
+	template<class storableAllocatorType, bool propagateReference>
+	inline storableAllocatorType & allocator_reference<storableAllocatorType, propagateReference>::get_internal_allocator() const
 	{
 		return *m_allocator;
 	}
