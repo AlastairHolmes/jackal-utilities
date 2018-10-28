@@ -8,6 +8,7 @@
 #define JKUTIL_VECTOR_H
 
 #include <vector>
+#include <type_traits>
 #include <jkutil\allocator.h>
 
 namespace jkutil
@@ -37,90 +38,395 @@ namespace jkutil
 
 	public:
 
-		vector();
-		vector(const storableAllocatorType& p_allocator);
+		vector() = default;
+
+		explicit vector(const storableAllocatorType& p_allocator) noexcept
+			: m_vector(jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{}
+
+		vector(const size_type p_count, const elementType& p_value = elementType(), const storableAllocatorType& p_allocator = storableAllocatorType())
+			: m_vector(p_count, p_value, jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{}
+
+		explicit vector(const size_type p_count, const storableAllocatorType& p_allocator = storableAllocatorType())
+			: m_vector(p_count, jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{}
+
+		template<class inputIteratorType>
+		vector(inputIteratorType p_first, inputIteratorType p_last, const storableAllocatorType& p_allocator = storableAllocatorType())
+			: m_vector(p_first, p_last, jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{}
 
 		vector(const vector&) = default;
-		vector(vector&&) = default;
 
 		template <class otherStorableAllocatorType>
-		vector(const vector<elementType,otherStorableAllocatorType>& p_instance, const storableAllocatorType& p_allocator);
+		vector(const vector<elementType, otherStorableAllocatorType>& p_instance, const storableAllocatorType& p_allocator)
+			: m_vector(jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{
+			assign(p_instance.cbegin(), p_instance.cend());
+		}
+
+		vector(vector&&) noexcept = default;
 
 		template <class otherStorableAllocatorType>
-		vector(vector<elementType, otherStorableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator);
+		vector(vector<elementType, otherStorableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator)
+			: m_vector(jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{
+			assign_value(std::move(p_instance));
+		}
+
+		vector(std::initializer_list<elementType> p_list, const storableAllocatorType& p_allocator = storableAllocatorType())
+			: m_vector(p_list, jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
+		{}
 
 	public:
 
-		vector& operator=(const vector& p_rhs);
-		vector& operator=(vector&& p_rhs);
+		bool operator==(const vector& p_instance) const
+		{
+			return m_vector == p_instance.m_vector;
+		}
+
+		bool operator!=(const vector& p_instance) const
+		{
+			return m_vector != p_instance.m_vector;
+		}
+
+		template <class otherStorableAllocator>
+		bool operator==(const vector<elementType, otherStorableAllocator>& p_instance) const
+		{
+			
+		}
+
+		template <class otherStorableAllocator>
+		bool operator!=(const vector<elementType, otherStorableAllocator>& p_instance) const
+		{
+
+		}
+
+		vector& operator=(const vector& p_rhs)
+		{
+			m_vector = p_rhs.m_vector;
+			return *this;
+		}
+
+		vector& operator=(vector&& p_rhs)
+		{
+			m_vector = std::move(p_rhs.m_vector);
+			return *this;
+		}
 
 		template <class otherStorableAllocatorType>
-		vector& assign_value(const vector<elementType, otherStorableAllocatorType>& p_instance);
-		template <class otherStorableAllocatorType>
-		vector& assign_value(vector<elementType, otherStorableAllocatorType>&& p_instance);
+		vector& assign_value(const vector<elementType, otherStorableAllocatorType>& p_instance)
+		{
+			clear();
+			reserve(p_instance.size());
+			assign(p_instance.begin(), p_instance.end());
+			return *this;
+		}
 
-		void swap(vector& p_instance);
 		template <class otherStorableAllocatorType>
-		void swap_value(vector<elementType, otherStorableAllocatorType>& p_instance);
+		vector& assign_value(vector<elementType, otherStorableAllocatorType>&& p_instance)
+		{
+			if constexpr(!std::is_same<storableAllocatorType, otherStorableAllocatorType>::value || storableAllocatorType::propagate_on_container_move_assignment::value)
+			{
+				clear();
+				reserve(p_instance.size());
+				for (auto& element : p_instance)
+				{
+					push_back(std::move(element));
+				}
+			}
+			else
+			{
+				reserve(p_instance.size());
+				*this = std::move(p_instance);
+			}
+			p_instance.clear();
+			return *this;
+		}
 
-		bool operator==(const vector& p_rhs) const;
-		bool operator!=(const vector& p_rhs) const;
+		void swap(vector& p_instance)
+		{
+			if(storableAllocatorType::propagate_on_container_swap_assignment::value || get_allocator() == p_instance.get_allocator())
+			{
+				m_vector.swap(p_instance.m_vector);
+			}
+			else
+			{
+				swap_value(p_instance);
+			}
+		}
+
+		template <class otherStorableAllocatorType>
+		void swap_value(vector<elementType, otherStorableAllocatorType>& p_instance)
+		{
+			vector<elementType, storableAllocatorType> other(get_allocator());
+
+			other.assign_value(std::move(p_instance));
+			p_instance.assign_value(std::move(*this));
+			assign_value(std::move(other));
+		}
+
+		bool operator==(const vector& p_rhs) const
+		{
+			return m_vector == p_rhs.m_vector;
+		}
+
+		bool operator!=(const vector& p_rhs) const
+		{
+			return m_vector != p_rhs.m_vector;
+		}
 
 	public:
 		
-		//assign
+		void assign(size_type p_count, const elementType& p_value)
+		{
+			m_vector.assign(p_count, p_value);
+		}
 
-		//at
+		template <class inputIteratorType>
+		void assign(inputIteratorType p_first, inputIteratorType p_last)
+		{
+			m_vector.assign(p_first, p_last);
+		}
 
-		//operator[]
+		void assign(std::initializer_list<elementType> p_list)
+		{
+			m_vector.assign(p_list);
+		}
 
-		//front
+		reference at(size_type p_index)
+		{
+			return m_vector.at(p_index);
+		}
 
-		//back
+		const_reference at(size_type p_index) const
+		{
+			return m_vector.at(p_index);
+		}
 
-		//data
+		reference operator[](size_type p_index)
+		{
+			return m_vector[p_index];
+		}
 
-		//begin
-		//cbegin
+		const_reference operator[](size_type p_index) const
+		{
+			return m_vector[p_index];
+		}
 
-		//end
-		//cend
+		reference front()
+		{
+			return m_vector.front();
+		}
 
-		//rbegin
-		//crbegin
+		const_reference front() const
+		{
+			return m_vector.front();
+		}
 
-		//rend
-		//crend
+		reference back()
+		{
+			return m_vector.back();
+		}
 
-		//empty
+		const_reference back() const
+		{
+			return m_vector.back();
+		}
 
-		//size
+		elementType* data() noexcept
+		{
+			return m_vector.data();
+		}
 
-		//max_size
+		const elementType* data() const noexcept
+		{
+			return m_vector.data();
+		}
 
-		//reserve
+		iterator begin() noexcept
+		{
+			return m_vector.begin();
+		}
 
-		//capacity
+		const_iterator begin() const noexcept
+		{
+			return m_vector.begin();
+		}
 
-		//shrink_to_fit
+		const_iterator cbegin() const noexcept
+		{
+			return m_vector.cbegin();
+		}
 
-		//clear
+		iterator end() noexcept
+		{
+			return m_vector.end();
+		}
 
-		//insert
+		const_iterator end() const noexcept
+		{
+			return m_vector.end();
+		}
 
-		//emplace
+		const_iterator cend() const noexcept
+		{
+			return m_vector.cend();
+		}
 
-		//erase
+		reverse_iterator rbegin() noexcept
+		{
+			return m_vector.rbegin();
+		}
 
-		//push_back
+		const_reverse_iterator rbegin() const noexcept
+		{
+			return m_vector.rbegin();
+		}
 
-		//emplace_back
+		const_reverse_iterator crbegin() const noexcept
+		{
+			return m_vector.crbegin();
+		}
 
-		//pop_back
+		reverse_iterator rend() noexcept
+		{
+			return m_vector.rend();
+		}
 
-		//resize
+		const_reverse_iterator rend() const noexcept
+		{
+			return m_vector.rend();
+		}
 
-		const storableAllocatorType& get_allocator() const;
+		const_reverse_iterator crend() const noexcept
+		{
+			return m_vector.crend();
+		}
+
+		bool empty() const noexcept
+		{
+			return m_vector.empty();
+		}
+
+		size_type size() const noexcept
+		{
+			return m_vector.size();
+		}
+
+		size_type max_size() const noexcept
+		{
+			return m_vector.max_size();
+		}
+
+		void reserve(size_type p_capacity)
+		{
+			m_vector.reserve(p_capacity);
+		}
+
+		size_type capacity() const noexcept
+		{
+			return m_vector.capacity();
+		}
+
+		void shrink_to_fit()
+		{
+			return m_vector.shrink_to_fit();
+		}
+
+		void clear() noexcept
+		{
+			return m_vector.clear();
+		}
+
+		iterator insert(const_iterator p_position, const elementType& p_element)
+		{
+			return m_vector.insert(p_position, p_element);
+		}
+
+		iterator insert(const_iterator p_position, elementType&& p_element)
+		{
+			return m_vector.insert(p_position, std::move(p_element));
+		}
+
+		iterator insert(const_iterator p_position, size_type p_count, const elementType& p_element)
+		{
+			return m_vector.insert(p_position, p_count, p_element);
+		}
+
+		template<class inputIteratorType>
+		iterator insert(const_iterator p_position, inputIteratorType p_first, inputIteratorType p_last)
+		{
+			return m_vector.insert(p_position, p_first, p_last);
+		}
+
+		iterator insert(const_iterator p_position, std::initializer_list<elementType> p_list)
+		{
+			return m_vector.insert(p_position, p_list);
+		}
+
+		template <class... argumentTypes>
+		iterator emplace(const_iterator p_position, argumentTypes&&... p_arguments)
+		{
+			return m_vector.emplace(p_position, std::forward<argumentTypes>(p_arguments)...);
+		}
+
+		iterator erase(iterator p_position)
+		{
+			return m_vector.erase(p_position);
+		}
+
+		iterator erase(const_iterator p_position)
+		{
+			return m_vector.erase(p_position);
+		}
+
+		iterator erase(iterator p_first, iterator p_second)
+		{
+			return m_vector.erase(p_first, p_second);
+		}
+
+		iterator erase(const_iterator p_first, const_iterator p_second)
+		{
+			return m_vector.erase(p_first, p_second);
+		}
+
+		void push_back(const elementType& p_element)
+		{
+			m_vector.push_back(p_element);
+		}
+
+		void push_back(elementType&& p_element)
+		{
+			m_vector.push_back(std::move(p_element));
+		}
+
+		template <class... argumentTypes>
+		reference emplace_back(argumentTypes&&... p_arguments)
+		{
+			return m_vector.emplace_back(std::forward<argumentTypes>(p_arguments)...);
+		}
+
+		void pop_back()
+		{
+			m_vector.pop_back();
+		}
+
+		void resize(const size_type p_size)
+		{
+			m_vector.resize(p_size);
+		}
+
+		void resize(const size_type p_size, const elementType& p_value)
+		{
+			m_vector.resize(p_size, p_value);
+		}
+
+		const storableAllocatorType& get_allocator() const
+		{
+			return m_vector.get_allocator().get_allocator();
+		}
 
 	private:
 
