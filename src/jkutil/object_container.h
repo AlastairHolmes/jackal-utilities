@@ -2,6 +2,10 @@
 	@file		object_container.h
 	@author		Alastair Holmes
 	@date		26/10/2018
+
+	@brief The classes in this file as for internal use only.
+
+	@details These classes serve as basic type erasure wrappers and are used in any_derived.
  */
 
 #ifndef JKUTIL_OBJECT_CONTAINER_H
@@ -11,7 +15,7 @@
 #include <jkutil\memory.h>
 #include <jkutil\type_traits.h>
 
-namespace jkutil
+namespace jkutil::_jkinternal
 {
 
 	template <class baseType>

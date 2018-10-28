@@ -33,7 +33,7 @@ target_compile_features(JKUtil PUBLIC
 			"${CMAKE_CURRENT_LIST_DIR}/bitwise.h"
 			"${CMAKE_CURRENT_LIST_DIR}/allocator_pointer.h"
 			"${CMAKE_CURRENT_LIST_DIR}/allocator_reference.h"
-			"${CMAKE_CURRENT_LIST_DIR}/any_derived.h"
+			"${CMAKE_CURRENT_LIST_DIR}/derived.h"
 			"${CMAKE_CURRENT_LIST_DIR}/test_allocator.h"
 			"${CMAKE_CURRENT_LIST_DIR}/vector.h"
 			"${CMAKE_CURRENT_LIST_DIR}/zipper.h"
