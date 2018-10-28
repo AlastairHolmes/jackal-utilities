@@ -36,6 +36,8 @@ target_compile_features(JKUtil PUBLIC
 			"${CMAKE_CURRENT_LIST_DIR}/any_derived.h"
 			"${CMAKE_CURRENT_LIST_DIR}/test_allocator.h"
 			"${CMAKE_CURRENT_LIST_DIR}/vector.h")
+			"${CMAKE_CURRENT_LIST_DIR}/zipper.h"
+			"${CMAKE_CURRENT_LIST_DIR}/utility.h")
 
 # Source Files
 
