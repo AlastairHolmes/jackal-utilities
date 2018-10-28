@@ -172,6 +172,11 @@ namespace jkutil
 	template <class elementType, class storableAllocatorType>
 	class allocator_stl_adapter
 	{
+	private:
+
+		template <class otherElementType, class otherStorableAllocatorType>
+		friend class allocator_stl_adapter;
+
 	public:
 
 		using value_type = elementType;
@@ -196,8 +201,36 @@ namespace jkutil
 		allocator_stl_adapter(const allocator_stl_adapter&) = default;
 		allocator_stl_adapter(allocator_stl_adapter&&) = default;
 
+		template <class otherElementType>
+		allocator_stl_adapter(const allocator_stl_adapter<otherElementType, storableAllocatorType>& p_instance)
+			: m_allocator(p_instance.m_allocator)
+		{
+
+		}
+
+		template <class otherElementType>
+		allocator_stl_adapter(allocator_stl_adapter<otherElementType, storableAllocatorType>&& p_instance)
+			: m_allocator(std::move(p_instance.m_allocator))
+		{
+
+		}
+
 		allocator_stl_adapter& operator=(const allocator_stl_adapter&) = default;
 		allocator_stl_adapter& operator=(allocator_stl_adapter&&) = default;
+
+		template <class otherElementType>
+		allocator_stl_adapter& operator=(const allocator_stl_adapter<otherElementType, storableAllocatorType>& p_instance)
+		{
+			m_allocator = p_instance.m_allocator;
+			return *this;
+		}
+
+		template <class otherElementType>
+		allocator_stl_adapter& operator=(allocator_stl_adapter<otherElementType, storableAllocatorType>&& p_instance)
+		{
+			m_allocator = std::move(p_instance.m_allocator);
+			return *this;
+		}
 
 		pointer allocate(size_type p_size)
 		{
