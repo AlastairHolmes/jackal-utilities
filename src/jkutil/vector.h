@@ -81,28 +81,6 @@ namespace jkutil
 
 	public:
 
-		bool operator==(const vector& p_instance) const
-		{
-			return m_vector == p_instance.m_vector;
-		}
-
-		bool operator!=(const vector& p_instance) const
-		{
-			return m_vector != p_instance.m_vector;
-		}
-
-		template <class otherStorableAllocator>
-		bool operator==(const vector<elementType, otherStorableAllocator>& p_instance) const
-		{
-			
-		}
-
-		template <class otherStorableAllocator>
-		bool operator!=(const vector<elementType, otherStorableAllocator>& p_instance) const
-		{
-
-		}
-
 		vector& operator=(const vector& p_rhs)
 		{
 			m_vector = p_rhs.m_vector;
@@ -176,6 +154,18 @@ namespace jkutil
 		{
 			return m_vector != p_rhs.m_vector;
 		}
+
+		//template <class otherStorableAllocator>
+		//bool operator==(const vector<elementType, otherStorableAllocator>& p_instance) const
+		//{
+		//	
+		//}
+
+		//template <class otherStorableAllocator>
+		//bool operator!=(const vector<elementType, otherStorableAllocator>& p_instance) const
+		//{
+
+		//}
 
 	public:
 		
