@@ -219,13 +219,16 @@ namespace jkutil
 			return m_allocator != p_instance.m_allocator;
 		}
 
+		const storableAllocatorType& get_allocator() const
+		{
+			return m_allocator;
+		}
+
 	private:
 
 		storableAllocatorType m_allocator;
 
 	};
-
-
 
 }
 
