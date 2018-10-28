@@ -4,6 +4,9 @@
 	@date		28/10/2018
  */
 
+#ifndef JKUTIL_ZIPPER_H
+#define JKUTIL_ZIPPER_H
+
 #include <tuple>
 #include <jkutil\utility.h>
 
@@ -137,3 +140,5 @@ namespace jkutil
 	}
 
 }
+
+#endif

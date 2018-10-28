@@ -4,6 +4,9 @@
 	@date		28/10/2018
  */
 
+#ifndef JKUTIL_UTILITY_H
+#define JKUTIL_UTILITY_H
+
 #include <tuple>
 
 namespace jkutil
@@ -51,3 +54,5 @@ namespace jkutil
 	}
 
 }
+
+#endif
