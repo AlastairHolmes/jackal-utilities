@@ -20,30 +20,53 @@ target_compile_features(JKUtil PUBLIC
 		SCOPE PRIVATE
 		INSTALL_DESTINATION "include/jkutil"
 		FILES
-			"${CMAKE_CURRENT_LIST_DIR}/preprocessor.h"
 			"${CMAKE_CURRENT_LIST_DIR}/assert.h"
-			"${CMAKE_CURRENT_LIST_DIR}/aligned.h"
+			"${CMAKE_CURRENT_LIST_DIR}/preprocessor.h"
 			"${CMAKE_CURRENT_LIST_DIR}/scoped_guard.h"
 			"${CMAKE_CURRENT_LIST_DIR}/overloaded.h"
 			"${CMAKE_CURRENT_LIST_DIR}/type_traits.h"
-			"${CMAKE_CURRENT_LIST_DIR}/array_proxy.h"
-			"${CMAKE_CURRENT_LIST_DIR}/allocator.h"
-			"${CMAKE_CURRENT_LIST_DIR}/object_container.h"
-			"${CMAKE_CURRENT_LIST_DIR}/memory.h"
 			"${CMAKE_CURRENT_LIST_DIR}/bitwise.h"
+			"${CMAKE_CURRENT_LIST_DIR}/utility.h")
+
+	AddSourcesToTarget(JKUtil
+		GROUP "Header Files\\Containers"
+		SCOPE PRIVATE
+		INSTALL_DESTINATION "include/jkutil"
+		FILES
+			"${CMAKE_CURRENT_LIST_DIR}/array_proxy.h"
+			"${CMAKE_CURRENT_LIST_DIR}/object_container.h"
+			"${CMAKE_CURRENT_LIST_DIR}/derived.h"
+			"${CMAKE_CURRENT_LIST_DIR}/vector.h"
+			"${CMAKE_CURRENT_LIST_DIR}/zipper.h")
+
+	AddSourcesToTarget(JKUtil
+		GROUP "Header Files\\Allocators"
+		SCOPE PRIVATE
+		INSTALL_DESTINATION "include/jkutil"
+		FILES
+			"${CMAKE_CURRENT_LIST_DIR}/allocator.h"
 			"${CMAKE_CURRENT_LIST_DIR}/allocator_pointer.h"
 			"${CMAKE_CURRENT_LIST_DIR}/allocator_reference.h"
-			"${CMAKE_CURRENT_LIST_DIR}/derived.h"
-			"${CMAKE_CURRENT_LIST_DIR}/test_allocator.h"
-			"${CMAKE_CURRENT_LIST_DIR}/vector.h"
-			"${CMAKE_CURRENT_LIST_DIR}/zipper.h"
-			"${CMAKE_CURRENT_LIST_DIR}/utility.h")
+			"${CMAKE_CURRENT_LIST_DIR}/test_allocator.h")
+
+	AddSourcesToTarget(JKUtil
+		GROUP "Header Files\\Memory"
+		SCOPE PRIVATE
+		INSTALL_DESTINATION "include/jkutil"
+		FILES
+			"${CMAKE_CURRENT_LIST_DIR}/memory.h"
+			"${CMAKE_CURRENT_LIST_DIR}/aligned.h")
 
 # Source Files
 
 	AddSourcesToTarget(JKUtil
-		GROUP "Source Files\\Utility"
+		GROUP "Source Files\\Allocators"
 		SCOPE PRIVATE
 		FILES
-			"${CMAKE_CURRENT_LIST_DIR}/allocator.cpp"
+			"${CMAKE_CURRENT_LIST_DIR}/allocator.cpp")
+
+	AddSourcesToTarget(JKUtil
+		GROUP "Source Files\\Memory"
+		SCOPE PRIVATE
+		FILES
 			"${CMAKE_CURRENT_LIST_DIR}/memory.cpp")
