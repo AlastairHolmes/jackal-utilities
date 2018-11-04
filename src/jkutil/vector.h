@@ -7,10 +7,11 @@
 #ifndef JKUTIL_VECTOR_H
 #define JKUTIL_VECTOR_H
 
-#include <vector>
-#include <type_traits>
 #include <jkutil\utility.h>
 #include <jkutil\allocator.h>
+#include <jkutil\array_proxy.h>
+#include <type_traits>
+#include <vector>
 
 namespace jkutil
 {
@@ -438,6 +439,16 @@ namespace jkutil
 		const storableAllocatorType& get_allocator() const
 		{
 			return m_vector.get_allocator().get_allocator();
+		}
+
+		array_proxy<const elementType> to_array_proxy() const
+		{
+			return array_proxy<const elementType>(m_vector.size(), m_vector.data());
+		}
+
+		array_proxy<elementType> to_array_proxy()
+		{
+			return array_proxy<elementType>(m_vector.size(), m_vector.data());
 		}
 
 	private:
