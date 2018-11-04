@@ -7,6 +7,7 @@
 #ifndef JKUTIL_ARRAY_PROXY_H
 #define JKUTIL_ARRAY_PROXY_H
 
+#include <jkutil\assert.h>
 #include <utility>
 #include <limits>
 #include <stdexcept>
@@ -112,6 +113,7 @@ namespace jkutil
 	inline array_proxy<elementType>::array_proxy(size_type p_size, pointer p_data) noexcept
 		: m_size(p_size), m_data(p_data)
 	{
+		JKUTIL_ASSERT(p_size == 0 || p_data != nullptr);
 	}
 
 	template<typename elementType>
