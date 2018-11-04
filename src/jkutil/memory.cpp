@@ -74,4 +74,14 @@ namespace jkutil
 		}
 	}
 
+	void memory_copy(void* p_destination, const void* p_source, size_t p_size)
+	{
+		JKUTIL_ASSERT(p_size == 0 || (p_source != nullptr && p_destination != nullptr));
+
+		if (p_size != 0 && p_destination != nullptr && p_source != nullptr)
+		{
+			memcpy(p_destination, p_source, p_size);
+		}
+	}
+
 }

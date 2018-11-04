@@ -34,15 +34,7 @@ namespace jkutil
 		memcpy is undefined for nullptrs even if the size is zero. This function is valid
 		is all reasonable cases, and will assert if not valid.
 	*/
-	void memory_copy(void* p_destination, const void* p_source, size_t p_size)
-	{
-		JKUTIL_ASSERT(p_size == 0 || (p_source != nullptr && p_destination != nullptr));
-
-		if (p_size != 0 && p_destination != nullptr && p_source != nullptr)
-		{
-			memcpy(p_destination, p_source, p_size);
-		}
-	}
+	void memory_copy(void* p_destination, const void* p_source, size_t p_size);
 
 	/*!
 		@brief Allocates memory using \p p_allocator of \p p_size bytes and alignment \p p_alignment.
