@@ -90,6 +90,12 @@ namespace jkutil
 		p_lhs.swap(p_rhs);
 	}
 
+	template <class elementType>
+	array_proxy<elementType> make_array_proxy(size_t p_count, elementType* p_elements)
+	{
+		return array_proxy<elementType>(p_count, p_elements);
+	}
+
 	template<typename elementType>
 	inline array_proxy<elementType>::array_proxy() noexcept
 		: m_size(static_cast<size_type>(0)), m_data(nullptr)
