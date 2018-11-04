@@ -28,15 +28,15 @@ namespace jkutil
 
 		@attention This class uses deep equality tests, and not simple pointer equality.
 
-		@tparam storableAllocatorType The underlying type of allocator this pointers to. This type meet the requirements
-		of 'JKStorableAllocator'.
+		@tparam allocatorType The underlying type of allocator this pointers to. This type meet the requirements
+		of 'JKAllocator'.
 
 		@tparam propagatePointer This controls whether the pointer is propagated when a container that uses this type of
 		allocator is swapped or assigned (move or copy).
 
 		@see jkutil::allocator_reference
 	*/
-	template <class storableAllocatorType, bool propagatePointer = false>
+	template <class allocatorType, bool propagatePointer = false>
 	class allocator_pointer
 	{
 	public:
@@ -47,7 +47,7 @@ namespace jkutil
 		using is_always_equal = std::false_type;
 
 		allocator_pointer(std::nullptr_t);
-		allocator_pointer(storableAllocatorType* p_allocator);
+		allocator_pointer(allocatorType* p_allocator);
 
 		allocator_pointer(const allocator_pointer&) = default;
 		allocator_pointer(allocator_pointer&&) = default;
@@ -55,7 +55,7 @@ namespace jkutil
 	public:
 
 		allocator_pointer& operator=(std::nullptr_t);
-		allocator_pointer& operator=(storableAllocatorType* p_allocator);
+		allocator_pointer& operator=(allocatorType* p_allocator);
 
 		allocator_pointer& operator=(const allocator_pointer&) = default;
 		allocator_pointer& operator=(allocator_pointer&&) = default;
@@ -63,7 +63,7 @@ namespace jkutil
 		/*!
 			@brief Deep compares two allocator_pointer
 
-			@details This equality operation uses a deep equality test, not simple pointer equality, meaning it is use \c storableAllocatorType's
+			@details This equality operation uses a deep equality test, not simple pointer equality, meaning it is use \c allocatorType's
 			equality operator.
 		*/
 		bool operator==(const allocator_pointer& p_rhs);
@@ -71,7 +71,7 @@ namespace jkutil
 		/*!
 			@brief Deep compares two allocator_pointer
 
-			@details This equality operation uses a deep equality test, not simple pointer equality, meaning it is uses \c storableAllocatorType's
+			@details This equality operation uses a deep equality test, not simple pointer equality, meaning it is uses \c allocatorType's
 			equality operator.
 		*/
 		bool operator!=(const allocator_pointer& p_rhs);
@@ -91,42 +91,48 @@ namespace jkutil
 		void deallocate(void* p_ptr, size_t p_size);
 
 		/*! @brief Get a pointer to the referred to allocator. Can return nullptr. */
-		storableAllocatorType* get_internal_allocator() const;
+		allocatorType* get_internal_allocator() const;
 
 	private:
 
-		storableAllocatorType* m_allocator;
+		allocatorType* m_allocator;
 
 	};
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline allocator_pointer<storableAllocatorType, propagatePointer>::allocator_pointer(std::nullptr_t)
+	template<bool propagatePointer = false, class allocatorType>
+	allocator_pointer<allocatorType, propagatePointer> make_allocator_pointer(allocatorType* p_allocator)
+	{
+		return allocator_pointer<allocatorType, propagatePointer>(p_allocator);
+	}
+
+	template<class allocatorType, bool propagatePointer>
+	inline allocator_pointer<allocatorType, propagatePointer>::allocator_pointer(std::nullptr_t)
 		: m_allocator(nullptr)
 	{
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline allocator_pointer<storableAllocatorType, propagatePointer>::allocator_pointer(storableAllocatorType * p_allocator)
+	template<class allocatorType, bool propagatePointer>
+	inline allocator_pointer<allocatorType, propagatePointer>::allocator_pointer(allocatorType * p_allocator)
 		: m_allocator(p_allocator)
 	{
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline auto allocator_pointer<storableAllocatorType, propagatePointer>::operator=(std::nullptr_t) -> allocator_pointer&
+	template<class allocatorType, bool propagatePointer>
+	inline auto allocator_pointer<allocatorType, propagatePointer>::operator=(std::nullptr_t) -> allocator_pointer&
 	{
 		m_allocator = nullptr;
 		return *this;
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline auto allocator_pointer<storableAllocatorType, propagatePointer>::operator=(storableAllocatorType * p_allocator) -> allocator_pointer&
+	template<class allocatorType, bool propagatePointer>
+	inline auto allocator_pointer<allocatorType, propagatePointer>::operator=(allocatorType * p_allocator) -> allocator_pointer&
 	{
 		m_allocator = p_allocator;
 		return *this;
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline bool allocator_pointer<storableAllocatorType, propagatePointer>::operator==(const allocator_pointer& p_rhs)
+	template<class allocatorType, bool propagatePointer>
+	inline bool allocator_pointer<allocatorType, propagatePointer>::operator==(const allocator_pointer& p_rhs)
 	{
 		if (m_allocator && p_rhs.m_allocator)
 		{
@@ -138,8 +144,8 @@ namespace jkutil
 		}
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline bool allocator_pointer<storableAllocatorType, propagatePointer>::operator!=(const allocator_pointer& p_rhs)
+	template<class allocatorType, bool propagatePointer>
+	inline bool allocator_pointer<allocatorType, propagatePointer>::operator!=(const allocator_pointer& p_rhs)
 	{
 		if (m_allocator && p_rhs.m_allocator)
 		{
@@ -151,8 +157,8 @@ namespace jkutil
 		}
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline void * allocator_pointer<storableAllocatorType, propagatePointer>::allocate(size_t p_size, size_t p_alignment)
+	template<class allocatorType, bool propagatePointer>
+	inline void * allocator_pointer<allocatorType, propagatePointer>::allocate(size_t p_size, size_t p_alignment)
 	{
 		if (!m_allocator)
 		{
@@ -161,8 +167,8 @@ namespace jkutil
 		return m_allocator->allocate(p_size, p_alignment);
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline void allocator_pointer<storableAllocatorType, propagatePointer>::deallocate(void * p_ptr, size_t p_size)
+	template<class allocatorType, bool propagatePointer>
+	inline void allocator_pointer<allocatorType, propagatePointer>::deallocate(void * p_ptr, size_t p_size)
 	{
 		JKUTIL_ASSERT(m_allocator);
 		if (m_allocator)
@@ -171,8 +177,8 @@ namespace jkutil
 		}
 	}
 
-	template<class storableAllocatorType, bool propagatePointer>
-	inline storableAllocatorType* allocator_pointer<storableAllocatorType, propagatePointer>::get_internal_allocator() const
+	template<class allocatorType, bool propagatePointer>
+	inline allocatorType* allocator_pointer<allocatorType, propagatePointer>::get_internal_allocator() const
 	{
 		return m_allocator;
 	}
