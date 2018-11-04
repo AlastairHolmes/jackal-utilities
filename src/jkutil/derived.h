@@ -286,11 +286,11 @@ namespace jkutil
 
 	template<class baseType, class storableAllocatorType>
 	template<class otherStorableAllocatorType>
-	inline bool derived<baseType, storableAllocatorType>::is_same_instance(const derived<baseType, storableAllocatorType>& p_instance) const
+	inline bool derived<baseType, storableAllocatorType>::is_same_instance(const derived<baseType, otherStorableAllocatorType>& p_instance) const
 	{
 		if constexpr (std::is_same<storableAllocatorType, otherStorableAllocatorType>::value)
 		{
-			return this != &p_instance;
+			return this == &p_instance;
 		}
 		else
 		{
@@ -675,7 +675,7 @@ namespace jkutil
 	{
 		if constexpr (std::is_same<storableAllocatorType, otherStorableAllocatorType>::value)
 		{
-			return this != &p_instance;
+			return this == &p_instance;
 		}
 		else
 		{
