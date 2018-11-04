@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <type_traits>
+#include <jkutil\utility.h>
 #include <jkutil\allocator.h>
 
 namespace jkutil
@@ -59,14 +60,14 @@ namespace jkutil
 
 		vector(const vector&) = default;
 
+		vector(vector&&) noexcept = default;
+
 		template <class otherStorableAllocatorType>
 		vector(const vector<elementType, otherStorableAllocatorType>& p_instance, const storableAllocatorType& p_allocator)
 			: m_vector(jkutil::allocator_stl_adapter<elementType, storableAllocatorType>(p_allocator))
 		{
 			assign(p_instance.cbegin(), p_instance.cend());
 		}
-
-		vector(vector&&) noexcept = default;
 
 		template <class otherStorableAllocatorType>
 		vector(vector<elementType, otherStorableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator)
@@ -96,36 +97,43 @@ namespace jkutil
 		template <class otherStorableAllocatorType>
 		vector& assign_value(const vector<elementType, otherStorableAllocatorType>& p_instance)
 		{
-			clear();
-			reserve(p_instance.size());
-			assign(p_instance.begin(), p_instance.end());
+			if (!is_same_instance(p_instance))
+			{
+				clear();
+				reserve(p_instance.size());
+				assign(p_instance.cbegin(), p_instance.cend());
+			}
 			return *this;
 		}
 
 		template <class otherStorableAllocatorType>
 		vector& assign_value(vector<elementType, otherStorableAllocatorType>&& p_instance)
 		{
-			if constexpr(!std::is_same<storableAllocatorType, otherStorableAllocatorType>::value || storableAllocatorType::propagate_on_container_move_assignment::value)
+			if (!is_same_instance(p_instance))
 			{
-				clear();
-				reserve(p_instance.size());
-				for (auto& element : p_instance)
+				if constexpr (std::is_same<storableAllocatorType, otherStorableAllocatorType>::value)
 				{
-					push_back(std::move(element));
+					if ((!storableAllocatorType::propagate_on_container_move_assignment::value) || (get_allocator() == p_instance.get_allocator()))
+					{
+						*this = std::move(p_instance);
+					}
+					else
+					{
+						assign_value_operation(std::move(p_instance));
+					}
 				}
+				else
+				{
+					assign_value_operation(std::move(p_instance));
+				}
+				p_instance.clear();
 			}
-			else
-			{
-				reserve(p_instance.size());
-				*this = std::move(p_instance);
-			}
-			p_instance.clear();
 			return *this;
 		}
 
 		void swap(vector& p_instance)
 		{
-			if(storableAllocatorType::propagate_on_container_swap_assignment::value || get_allocator() == p_instance.get_allocator())
+			if(storableAllocatorType::propagate_on_container_swap_assignment::value || jkutil::_jkinternal::are_equal(get_allocator(), p_instance.get_allocator()))
 			{
 				m_vector.swap(p_instance.m_vector);
 			}
@@ -138,11 +146,14 @@ namespace jkutil
 		template <class otherStorableAllocatorType>
 		void swap_value(vector<elementType, otherStorableAllocatorType>& p_instance)
 		{
-			vector<elementType, storableAllocatorType> other(get_allocator());
+			if (!is_same_instance(p_instance))
+			{
+				vector<elementType, storableAllocatorType> other(get_allocator());
 
-			other.assign_value(std::move(p_instance));
-			p_instance.assign_value(std::move(*this));
-			assign_value(std::move(other));
+				other.assign_value(std::move(p_instance));
+				p_instance.assign_value(std::move(*this));
+				assign_value(std::move(other));
+			}
 		}
 
 		bool operator==(const vector& p_rhs) const
@@ -155,17 +166,28 @@ namespace jkutil
 			return m_vector != p_rhs.m_vector;
 		}
 
-		//template <class otherStorableAllocator>
-		//bool operator==(const vector<elementType, otherStorableAllocator>& p_instance) const
-		//{
-		//	
-		//}
+		template <class otherStorableAllocator>
+		bool operator==(const vector<elementType, otherStorableAllocator>& p_instance) const
+		{
+			auto this_iterator = cbegin(), this_end_iterator = cend();
+			auto other_iterator = p_instance.cbegin(), other_end_iterator = p_instance.cend();
 
-		//template <class otherStorableAllocator>
-		//bool operator!=(const vector<elementType, otherStorableAllocator>& p_instance) const
-		//{
+			for (; (this_iterator != this_end_iterator) && (other_iterator != other_end_iterator); ++this_iterator, ++other_iterator)
+			{
+				if (*this_iterator != *other_iterator)
+				{
+					break;
+				}
+			}
 
-		//}
+			return (this_iterator == this_end_iterator) && (other_iterator == other_end_iterator);
+		}
+
+		template <class otherStorableAllocator>
+		bool operator!=(const vector<elementType, otherStorableAllocator>& p_instance) const
+		{
+			return !(this->operator==(p_instance));
+		}
 
 	public:
 		
@@ -419,6 +441,30 @@ namespace jkutil
 		}
 
 	private:
+
+		template <class otherStorableAllocatorType>
+		void assign_value_operation(vector<elementType, otherStorableAllocatorType>&& p_instance)
+		{
+			clear();
+			reserve(p_instance.size());
+			for (auto& element : p_instance)
+			{
+				emplace_back(std::move(element));
+			}
+		}
+
+		template<class otherStorableAllocatorType>
+		bool is_same_instance(const vector<elementType, otherStorableAllocatorType>& p_instance) const
+		{
+			if constexpr (std::is_same<storableAllocatorType, otherStorableAllocatorType>::value)
+			{
+				return this == &p_instance;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 		internal_vector_type m_vector;
 

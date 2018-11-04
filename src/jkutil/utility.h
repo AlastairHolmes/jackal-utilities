@@ -53,6 +53,28 @@ namespace jkutil
 		return _jkinternal::tuple_map_return_impl(p_tuple, std::forward<callableType>(p_callable), std::make_index_sequence<sizeof...(incrementableTypes)>{});
 	}
 
+	//-----------------------------------//
+
+	namespace _jkinternal
+	{
+
+		template <class elementType, class otherElementType>
+		bool are_equal(const elementType& p_element, const otherElementType& p_other_element)
+		{
+			static_assert((!std::is_reference_v<elementType>) && (!std::is_reference_v<otherElementType>));
+
+			if constexpr (std::is_same<elementType, otherElementType>::value)
+			{
+				return p_element == p_other_element;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+	}
+
 }
 
 #endif
