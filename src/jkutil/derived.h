@@ -38,7 +38,7 @@ namespace jkutil
 		derived(const storableAllocatorType& p_allocator, std::in_place_type_t<elementType> p_in_place, argumentTypes&&... p_arguments);
 
 		template <class otherStorableAllocatorType>
-		derived(derived<baseType, storableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator);
+		derived(derived<baseType, otherStorableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator);
 
 		derived(const storableAllocatorType& p_allocator);
 
@@ -53,7 +53,7 @@ namespace jkutil
 		derived& operator=(derived&& p_rhs);
 
 		template <class otherStorableAllocatorType>
-		derived& assign_value(derived<baseType, storableAllocatorType>&& p_instance);
+		derived& assign_value(derived<baseType, otherStorableAllocatorType>&& p_instance);
 
 		template <class elementType, class... argumentTypes>
 		void emplace(argumentTypes&&... p_arguments);
@@ -63,7 +63,7 @@ namespace jkutil
 		void swap(derived& p_instance);
 
 		template <class otherStorableAllocatorType>
-		void swap_value(derived<baseType, storableAllocatorType>& p_instance);
+		void swap_value(derived<baseType, otherStorableAllocatorType>& p_instance);
 
 		bool has_value() const;
 		const baseType* get() const;
@@ -75,13 +75,13 @@ namespace jkutil
 	private:
 
 		template<class otherStorableAllocatorType>
-		void assign_value_operation(derived<baseType, storableAllocatorType>&& p_instance);
+		void assign_value_operation(derived<baseType, otherStorableAllocatorType>&& p_instance);
 
 		template<class otherStorableAllocatorType>
-		void swap_value_operation(derived<baseType, storableAllocatorType>& p_instance);
+		void swap_value_operation(derived<baseType, otherStorableAllocatorType>& p_instance);
 
 		template<class otherStorableAllocatorType>
-		bool is_same_instance(const derived<baseType, storableAllocatorType>& p_instance) const;
+		bool is_same_instance(const derived<baseType, otherStorableAllocatorType>& p_instance) const;
 
 		bool has_self_reference() const;
 		virtual_allocator_adapter<allocator_pointer<storableAllocatorType>> get_abstract_allocator();
@@ -106,7 +106,7 @@ namespace jkutil
 
 	template<class baseType, class storableAllocatorType>
 	template<class otherStorableAllocatorType>
-	inline derived<baseType, storableAllocatorType>::derived(derived<baseType, storableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator)
+	inline derived<baseType, storableAllocatorType>::derived(derived<baseType, otherStorableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator)
 		: derived(p_allocator)
 	{
 		assign_value_operation(p_instance);
@@ -165,7 +165,7 @@ namespace jkutil
 
 	template<class baseType, class storableAllocatorType>
 	template <class otherStorableAllocatorType>
-	auto derived<baseType, storableAllocatorType>::assign_value(derived<baseType, storableAllocatorType>&& p_instance) -> derived&
+	auto derived<baseType, storableAllocatorType>::assign_value(derived<baseType, otherStorableAllocatorType>&& p_instance) -> derived&
 	{
 		if (!is_same_instance(p_instance))
 		{
@@ -220,7 +220,7 @@ namespace jkutil
 
 	template<class baseType, class storableAllocatorType>
 	template <class otherStorableAllocatorType>
-	void derived<baseType, storableAllocatorType>::swap_value(derived<baseType, storableAllocatorType>& p_instance)
+	void derived<baseType, storableAllocatorType>::swap_value(derived<baseType, otherStorableAllocatorType>& p_instance)
 	{
 		if (!is_same_instance(p_instance))
 		{
@@ -263,7 +263,7 @@ namespace jkutil
 
 	template<class baseType, class storableAllocatorType>
 	template<class otherStorableAllocatorType>
-	inline void derived<baseType, storableAllocatorType>::assign_value_operation(derived<baseType, storableAllocatorType>&& p_instance)
+	inline void derived<baseType, storableAllocatorType>::assign_value_operation(derived<baseType, otherStorableAllocatorType>&& p_instance)
 	{
 		reset();
 		set_container(p_instance.container_move(get_abstract_allocator()));
@@ -272,7 +272,7 @@ namespace jkutil
 
 	template<class baseType, class storableAllocatorType>
 	template<class otherStorableAllocatorType>
-	inline void derived<baseType, storableAllocatorType>::swap_value_operation(derived<baseType, storableAllocatorType>& p_instance)
+	inline void derived<baseType, storableAllocatorType>::swap_value_operation(derived<baseType, otherStorableAllocatorType>& p_instance)
 	{
 		auto this_value = container_move(p_instance.get_abstract_allocator());
 		auto instance_value = p_instance.container_move(get_abstract_allocator());
