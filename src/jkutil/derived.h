@@ -21,8 +21,71 @@ namespace jkutil
 
 	//Stores an instance of any type derived from baseType (Publically inherits baseType).
 
-	//derived
-	//derived_copyable
+	template <class baseType, class storableAllocatorType>
+	class derived;
+
+	template <class baseType, class storableAllocatorType>
+	class derived_copyable;
+
+	/*!
+		@brief Used to abstractly move emplace an object into a derived object.
+	*/
+	template <class baseType>
+	class derived_abstract_move_emplacer
+	{
+	public:
+
+		/*!
+			@brief Move an object into \p p_derived.
+		*/
+		virtual void move_to(derived<baseType, allocator_pointer<virtual_allocator>>& p_derived) = 0;
+
+	};
+
+	/*!
+		@brief Used to abstractly copy emplace an object into a derived object.
+	*/
+	template <class baseType>
+	class derived_abstract_copy_emplacer
+	{
+	public:
+
+		/*!
+			@brief Copy an object into \p p_derived.
+		*/
+		virtual void clone_to(derived<baseType, allocator_pointer<virtual_allocator>>& p_derived) const = 0;
+
+	};
+
+	/*!
+		@brief Used to abstractly move emplace an object into a derived_copyable object.
+	*/
+	template <class baseType>
+	class derived_copyable_abstract_move_emplacer
+	{
+	public:
+
+		/*!
+			@brief Move an object into \p p_derived.
+		*/
+		virtual void move_to(derived_copyable<baseType, allocator_pointer<virtual_allocator>>& p_derived) = 0;
+
+	};
+
+	/*!
+		@brief Used to abstractly copy emplace an object into a derived_copyable object.
+	*/
+	template <class baseType>
+	class derived_copyable_abstract_copy_emplacer
+	{
+	public:
+
+		/*!
+			@brief Copy an object into \p p_derived.
+		*/
+		virtual void clone_to(derived_copyable<baseType, allocator_pointer<virtual_allocator>>& p_derived) const = 0;
+
+	};
 
 	template <class baseType, class storableAllocatorType>
 	class derived
@@ -57,6 +120,18 @@ namespace jkutil
 
 		template <class elementType, class... argumentTypes>
 		void emplace(argumentTypes&&... p_arguments);
+
+		/*!
+			@brief Allows abstract copy emplacement into the derived object (Abstract from the allocator type).
+			@see derived_abstract_copy_emplacer
+		*/
+		void abstract_emplace(const derived_abstract_copy_emplacer<baseType>& p_emplacer);
+
+		/*!
+			@brief Allows abstract move emplacement into the derived object (Abstract from the allocator type).
+			@see derived_abstract_move_emplacer
+		*/
+		void abstract_emplace(derived_abstract_move_emplacer<baseType>&& p_emplacer);
 
 		void reset();
 
@@ -181,6 +256,32 @@ namespace jkutil
 	{
 		reset();
 		set_container(jkutil::create<jkutil::_jkinternal::moveable_object_container<elementType, baseType>>(m_allocator, std::forward<argumentTypes>(p_arguments)...));
+	}
+
+	template<class baseType, class storableAllocatorType>
+	inline void derived<baseType, storableAllocatorType>::abstract_emplace(const derived_abstract_copy_emplacer<baseType>& p_emplacer)
+	{
+		reset();
+
+		auto allocator = get_abstract_allocator();
+		derived<baseType, allocator_pointer<virtual_allocator>> temp = derived<baseType, allocator_pointer<virtual_allocator>>(&allocator);
+		p_emplacer.clone_to(temp);
+
+		std::swap(m_container, temp.m_container);
+		std::swap(m_element, temp.m_element);
+	}
+
+	template<class baseType, class storableAllocatorType>
+	inline void derived<baseType, storableAllocatorType>::abstract_emplace(derived_abstract_move_emplacer<baseType>&& p_emplacer)
+	{
+		reset();
+
+		auto allocator = get_abstract_allocator();
+		derived<baseType, allocator_pointer<virtual_allocator>> temp = derived<baseType, allocator_pointer<virtual_allocator>>(&allocator);
+		p_emplacer.move_to(temp);
+
+		std::swap(m_container, temp.m_container);
+		std::swap(m_element, temp.m_element);
 	}
 
 	template<class baseType, class storableAllocatorType>
@@ -397,6 +498,9 @@ namespace jkutil
 		template <class elementType, class... argumentTypes>
 		void emplace(argumentTypes&&... p_arguments);
 
+		void abstract_emplace(const derived_copyable_abstract_copy_emplacer<baseType>& p_emplacer);
+		void abstract_emplace(derived_copyable_abstract_move_emplacer<baseType>&& p_emplacer);
+
 		void reset();
 
 		bool has_value() const;
@@ -558,6 +662,32 @@ namespace jkutil
 	{
 		reset();
 		set_container(jkutil::create<jkutil::_jkinternal::cloneable_object_container<elementType, baseType>>(m_allocator, std::forward<argumentTypes>(p_arguments)...));
+	}
+
+	template<class baseType, class storableAllocatorType>
+	inline void derived_copyable<baseType, storableAllocatorType>::abstract_emplace(const derived_copyable_abstract_copy_emplacer<baseType>& p_emplacer)
+	{
+		reset();
+
+		auto allocator = get_abstract_allocator();
+		derived_copyable<baseType, allocator_pointer<virtual_allocator>> temp = derived_copyable<baseType, allocator_pointer<virtual_allocator>>(&allocator);
+		p_emplacer.clone_to(temp);
+
+		std::swap(m_container, temp.m_container);
+		std::swap(m_element, temp.m_element);
+	}
+
+	template<class baseType, class storableAllocatorType>
+	inline void derived_copyable<baseType, storableAllocatorType>::abstract_emplace(derived_copyable_abstract_move_emplacer<baseType>&& p_emplacer)
+	{
+		reset();
+
+		auto allocator = get_abstract_allocator();
+		derived_copyable<baseType, allocator_pointer<virtual_allocator>> temp = derived_copyable<baseType, allocator_pointer<virtual_allocator>>(&allocator);
+		p_emplacer.move_to(temp);
+
+		std::swap(m_container, temp.m_container);
+		std::swap(m_element, temp.m_element);
 	}
 
 	template<class baseType, class storableAllocatorType>
