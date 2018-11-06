@@ -42,8 +42,8 @@ namespace jkutil
 
 	public:
 
-		allocator_reference& operator=(const allocator_reference& p_rhs) = default;
-		allocator_reference& operator=(allocator_reference&& p_rhs) = default;
+		allocator_reference& operator=(const allocator_reference&) = default;
+		allocator_reference& operator=(allocator_reference&&) = default;
 
 		/*! @brief Deep equality comparison.*/
 		bool operator==(const allocator_reference& p_rhs);
