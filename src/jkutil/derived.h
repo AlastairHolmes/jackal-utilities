@@ -175,6 +175,7 @@ namespace jkutil
 	inline derived<baseType, storableAllocatorType>::derived(const storableAllocatorType& p_allocator, std::in_place_type_t<elementType> p_in_place, argumentTypes&&... p_arguments)
 		: derived(p_allocator)
 	{
+		static_assert(std::is_move_constructible_v<elementType>);
 		p_in_place;
 		emplace<elementType>(std::forward<argumentTypes>(p_arguments)...);
 	}
@@ -254,6 +255,8 @@ namespace jkutil
 	template<class elementType, class ...argumentTypes>
 	inline void derived<baseType, storableAllocatorType>::emplace(argumentTypes&&... p_arguments)
 	{
+		static_assert(std::is_move_constructible_v<elementType>);
+
 		reset();
 		set_container(jkutil::create<jkutil::_jkinternal::moveable_object_container<elementType, baseType>>(m_allocator, std::forward<argumentTypes>(p_arguments)...));
 	}
@@ -542,6 +545,7 @@ namespace jkutil
 	inline derived_copyable<baseType, storableAllocatorType>::derived_copyable(const storableAllocatorType& p_allocator, std::in_place_type_t<elementType> p_in_place, argumentTypes&&... p_arguments)
 		: derived_copyable(p_allocator)
 	{
+		static_assert(std::is_copy_assignable_v<elementType> && std::is_move_assignable_v<elementType>);
 		p_in_place;
 		emplace<elementType>(std::forward<argumentTypes>(p_arguments)...);
 	}
@@ -660,6 +664,7 @@ namespace jkutil
 	template<class elementType, class ...argumentTypes>
 	inline void derived_copyable<baseType, storableAllocatorType>::emplace(argumentTypes&&... p_arguments)
 	{
+		static_assert(std::is_copy_assignable_v<elementType> && std::is_move_assignable_v<elementType>);
 		reset();
 		set_container(jkutil::create<jkutil::_jkinternal::cloneable_object_container<elementType, baseType>>(m_allocator, std::forward<argumentTypes>(p_arguments)...));
 	}
