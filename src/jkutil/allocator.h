@@ -263,6 +263,59 @@ namespace jkutil
 
 	};
 
+	template <class storableAllocatorType>
+	class allocator_store
+	{
+	public:
+
+		allocator_store(const storableAllocatorType& p_allocator)
+			: m_allocator(p_allocator)
+		{
+
+		}
+
+		allocator_store& operator=(const allocator_store& p_instance)
+		{
+			if constexpr (storableAllocatorType::propagate_on_container_copy_assignment::value)
+			{
+				m_allocator = p_instance.m_allocator;
+			}
+			return *this;
+		}
+
+		allocator_store& operator=(allocator_store&& p_instance)
+		{
+			if constexpr (storableAllocatorType::propagate_on_container_move_assignment::value)
+			{
+				m_allocator = std::move(p_instance.m_allocator);
+			}
+			return *this;
+		}
+
+		void swap(allocator_store& p_instance)
+		{
+			if constexpr (storableAllocatorType::propagate_on_container_swap::value)
+			{
+				std::swap(m_allocator, p_instance.m_allocator);
+			}
+		}
+
+		storableAllocatorType& get_allocator()
+		{
+			return m_allocator;
+		}
+
+		const storableAllocatorType& get_allocator() const
+		{
+			return m_allocator;
+		}
+
+	private:
+
+		storableAllocatorType m_allocator;
+
+	};
+
 }
 
 #endif
