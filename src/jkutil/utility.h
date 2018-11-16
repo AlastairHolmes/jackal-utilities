@@ -75,6 +75,39 @@ namespace jkutil
 
 	}
 
+	template <class iteratorType>
+	class iterator_range
+	{
+	public:
+
+		iterator_range(const iteratorType& p_begin, const iteratorType& p_end)
+			: m_begin(p_begin), m_end(p_end)
+		{
+
+		}
+
+		iteratorType begin() const
+		{
+			return m_begin;
+		}
+
+		iteratorType end() const
+		{
+			return m_end;
+		}
+
+	private:
+
+		iteratorType m_begin, m_end;
+
+	};
+
+	template <class iteratorType>
+	iterator_range<iteratorType> make_iterator_range(const iteratorType& p_begin, const iteratorType& p_end)
+	{
+		return iterator_range<iteratorType>(p_begin, p_end);
+	}
+
 }
 
 #endif
