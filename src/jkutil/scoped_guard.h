@@ -8,6 +8,7 @@
 #define JKUTIL_SCOPED_GUARD_H
 
 #include <utility>
+#include <optional>
 
 namespace jkutil
 {
@@ -97,19 +98,19 @@ namespace jkutil
 	private:
 
 		bool m_enabled;
-		payloadCallable m_payload;
+		std::optional<payloadCallable> m_payload;
 
 	};
 
 	template<class payloadCallable>
 	inline scoped_guard<payloadCallable>::scoped_guard(const payloadCallable& p_payload, bool p_enabled)
-		: m_payload(p_payload), m_enabled(p_enabled)
+		: m_payload(std::in_place, p_payload), m_enabled(p_enabled)
 	{
 	}
 
 	template<class payloadCallable>
 	inline scoped_guard<payloadCallable>::scoped_guard(payloadCallable&& p_payload, bool p_enabled)
-		: m_payload(p_payload), m_enabled(p_enabled)
+		: m_payload(std::in_place, std::move(p_payload)), m_enabled(p_enabled)
 	{
 	}
 
@@ -118,14 +119,15 @@ namespace jkutil
 		: m_payload(std::move(p_instance.m_payload)), m_enabled(p_instance.m_enabled)
 	{
 		p_instance.m_enabled = false;
+		p_instance.m_payload.reset();
 	}
 
 	template<class payloadCallable>
 	inline scoped_guard<payloadCallable>::~scoped_guard()
 	{
-		if (m_enabled)
+		if (m_enabled && m_payload.has_value())
 		{
-			m_payload();
+			m_payload.value()();
 		}
 	}
 
