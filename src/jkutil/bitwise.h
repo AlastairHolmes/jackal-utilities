@@ -8,6 +8,7 @@
 #define JKUTIL_BITWISE_H
 
 #include <stdint.h>
+#include <limits>
 
 namespace jkutil
 {
@@ -132,20 +133,14 @@ namespace jkutil
 	*/
 	constexpr uint32_t ceil_pow2(uint32_t p_number)
 	{
-		if (p_number < 2)
-		{
-			return 1;
-		}
-		return set_highest_bit(p_number - 1) << 1;
+		uint32_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
+		return result == 0 ? set_highest_bit(std::numeric_limits<uint32_t>::max()) : result;
 	}
 
 	constexpr uint64_t ceil_pow2(uint64_t p_number)
 	{
-		if (p_number < 2)
-		{
-			return 1;
-		}
-		return set_highest_bit(p_number - 1) << 1;
+		uint64_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
+		return result == 0 ? set_highest_bit(std::numeric_limits<uint64_t>::max()) : result;
 	}
 
 }
