@@ -274,6 +274,16 @@ namespace jkutil
 
 		}
 
+		allocator_store(const allocator_store& p_instance)
+			: m_allocator(p_instance.m_allocator)
+		{
+		}
+
+		allocator_store(allocator_store&& p_instance)
+			: m_allocator(p_instance.m_allocator)
+		{
+		}
+
 		allocator_store& operator=(const allocator_store& p_instance)
 		{
 			if constexpr (storableAllocatorType::propagate_on_container_copy_assignment::value)
