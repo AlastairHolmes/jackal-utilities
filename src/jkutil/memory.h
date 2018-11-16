@@ -110,7 +110,7 @@ namespace jkutil
 
 		void run();
 
-		bool m_run;
+		bool m_has_run;
 		bool m_enabled;
 		allocatorType& m_allocator;
 
@@ -120,28 +120,29 @@ namespace jkutil
 
 		void* m_memory;
 		size_t m_size;
+
 	};
 
 	template<class allocatorType>
 	inline deallocate_guard<allocatorType>::deallocate_guard(allocatorType& p_allocator, void* p_memory, size_t p_size, bool p_enabled)
-		: m_run(false),
+		: m_has_run(false),
 		m_enabled(p_enabled),
+		m_allocator(p_allocator),
 		m_memory(p_memory),
-		m_size(p_size),
-		m_allocator(p_allocator)
+		m_size(p_size)
 	{
 	}
 
 	template<class allocatorType>
 	inline deallocate_guard<allocatorType>::deallocate_guard(deallocate_guard&& p_instance)
-		: m_run(p_instance.m_run),
+		: m_has_run(p_instance.m_has_run),
 		m_enabled(p_instance.m_enabled),
+		m_allocator(p_instance.m_allocator),
 		m_memory(p_instance.m_memory),
-		m_size(p_instance.m_size),
-		m_allocator(p_instance.m_allocator)
+		m_size(p_instance.m_size)
 	{
-		p_instance.m_run = true;
-		p_instance.m_active = false;
+		p_instance.m_has_run = true;
+		p_instance.m_enabled = false;
 		p_instance.m_memory = nullptr;
 		p_instance.m_size = 0;
 	}
@@ -173,12 +174,12 @@ namespace jkutil
 	template<class allocatorType>
 	inline void deallocate_guard<allocatorType>::run()
 	{
-		if (m_enabled && !m_run)
+		if (m_enabled && !m_has_run)
 		{
 			memory_deallocate(m_allocator, m_memory, m_size);
 			m_enabled = false;
 		}
-		m_run = true;
+		m_has_run = true;
 	}
 
 	template <class allocatorType>
