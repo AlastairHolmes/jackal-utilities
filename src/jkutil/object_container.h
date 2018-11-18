@@ -25,7 +25,7 @@ namespace jkutil::_jkinternal
 
 		virtual const baseType* get() const = 0;
 		virtual baseType* get() = 0;
-		virtual size_t size() const = 0;
+		virtual std::size_t size() const = 0;
 
 		virtual void destroy(virtual_allocator& p_allocator) = 0;
 
@@ -59,7 +59,7 @@ namespace jkutil::_jkinternal
 
 		virtual const baseType* get() const override final;
 		virtual baseType* get() override final;
-		virtual size_t size() const override final;
+		virtual std::size_t size() const override final;
 
 		virtual void destroy(virtual_allocator& p_allocator) override final;
 
@@ -89,7 +89,7 @@ namespace jkutil::_jkinternal
 	}
 
 	template<class elementType, class baseType>
-	inline size_t object_container<elementType, baseType>::size() const
+	inline std::size_t object_container<elementType, baseType>::size() const
 	{
 		return sizeof(elementType);
 	}
@@ -139,7 +139,7 @@ namespace jkutil::_jkinternal
 
 		virtual const baseType* get() const override final;
 		virtual baseType* get() override final;
-		virtual size_t size() const override final;
+		virtual std::size_t size() const override final;
 
 		virtual void destroy(virtual_allocator& p_allocator) override final;
 
@@ -171,7 +171,7 @@ namespace jkutil::_jkinternal
 	}
 
 	template<class elementType, class baseType>
-	inline size_t moveable_object_container<elementType, baseType>::size() const
+	inline std::size_t moveable_object_container<elementType, baseType>::size() const
 	{
 		return sizeof(elementType);
 	}
@@ -229,7 +229,7 @@ namespace jkutil::_jkinternal
 
 		virtual const baseType* get() const override final;
 		virtual baseType* get() override final;
-		virtual size_t size() const override final;
+		virtual std::size_t size() const override final;
 
 		virtual void destroy(virtual_allocator& p_allocator) override final;
 
@@ -261,7 +261,7 @@ namespace jkutil::_jkinternal
 	}
 
 	template<class elementType, class baseType>
-	inline size_t cloneable_object_container<elementType, baseType>::size() const
+	inline std::size_t cloneable_object_container<elementType, baseType>::size() const
 	{
 		return sizeof(elementType);
 	}
@@ -297,7 +297,7 @@ namespace jkutil::_jkinternal
 
 		virtual const baseType* get() const = 0;
 		virtual baseType* get() = 0;
-		virtual size_t size() const = 0;
+		virtual std::size_t size() const = 0;
 
 		virtual void destroy() = 0;
 
@@ -326,7 +326,7 @@ namespace jkutil::_jkinternal
 		virtual const baseType* get() const override final;
 		virtual baseType* get() override final;
 
-		virtual size_t size() const override final;
+		virtual std::size_t size() const override final;
 
 		virtual void destroy() override final;
 
@@ -357,7 +357,7 @@ namespace jkutil::_jkinternal
 	}
 
 	template<class elementType, class allocatorType, class baseType>
-	inline size_t self_allocated_object_container<elementType, allocatorType, baseType>::size() const
+	inline std::size_t self_allocated_object_container<elementType, allocatorType, baseType>::size() const
 	{
 		return sizeof(elementType);
 	}

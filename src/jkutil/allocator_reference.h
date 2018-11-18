@@ -9,6 +9,7 @@
 
 #include <stdexcept>
 #include <type_traits>
+#include <cstddef>
 
 namespace jkutil
 {
@@ -55,13 +56,13 @@ namespace jkutil
 			@brief Allocates memory using the referenced allocator.
 			@details Simply pass through any allocation requests to the referenced allocator.
 		*/
-		void* allocate(size_t p_size, size_t p_alignment);
+		void* allocate(std::size_t p_size, std::size_t p_alignment);
 
 		/*!
 			@brief Dealocates memory using the referenced allocator.
 			@details Simply pass through any deallocation requests to the referenced allocator.
 		*/
-		void deallocate(void* p_ptr, size_t p_size);
+		void deallocate(void* p_ptr, std::size_t p_size);
 
 		/*! @brief Gets the current referenced allocator. */
 		allocatorType& get_internal_allocator() const;
@@ -105,13 +106,13 @@ namespace jkutil
 	}
 
 	template<class allocatorType, bool propagateReference>
-	inline void* allocator_reference<allocatorType, propagateReference>::allocate(size_t p_size, size_t p_alignment)
+	inline void* allocator_reference<allocatorType, propagateReference>::allocate(std::size_t p_size, std::size_t p_alignment)
 	{
 		return m_allocator->allocate(p_size, p_alignment);
 	}
 
 	template<class allocatorType, bool propagateReference>
-	inline void allocator_reference<allocatorType, propagateReference>::deallocate(void * p_ptr, size_t p_size)
+	inline void allocator_reference<allocatorType, propagateReference>::deallocate(void * p_ptr, std::size_t p_size)
 	{
 		m_allocator->deallocate(p_ptr, p_size);
 	}

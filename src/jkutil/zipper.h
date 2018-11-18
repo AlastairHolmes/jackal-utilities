@@ -7,8 +7,9 @@
 #ifndef JKUTIL_ZIPPER_H
 #define JKUTIL_ZIPPER_H
 
-#include <tuple>
 #include <jkutil\utility.h>
+#include <cstddef>
+#include <tuple>
 
 namespace jkutil
 {
@@ -45,7 +46,7 @@ namespace jkutil
 
 	private:
 
-		template <size_t... indexValues>
+		template <std::size_t... indexValues>
 		bool equality_impl(const std::tuple<iteratorTypes...>& p_rhs, std::index_sequence<indexValues...>) const;
 
 		std::tuple<iteratorTypes...> m_iterators;
@@ -116,7 +117,7 @@ namespace jkutil
 	}
 
 	template <class... iteratorTypes>
-	template <size_t... indexValues>
+	template <std::size_t... indexValues>
 	bool zip_iterator<iteratorTypes...>::equality_impl(const std::tuple<iteratorTypes...>& p_rhs, std::index_sequence<indexValues...>) const
 	{
 		return (sizeof...(iteratorTypes) == 0) || ((std::get<indexValues>(m_iterators) == std::get<indexValues>(p_rhs)) || ...);

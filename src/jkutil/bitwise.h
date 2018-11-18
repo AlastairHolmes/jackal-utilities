@@ -7,7 +7,7 @@
 #ifndef JKUTIL_BITWISE_H
 #define JKUTIL_BITWISE_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <limits>
 
 namespace jkutil
@@ -24,9 +24,9 @@ namespace jkutil
 		10000 (16) | 10000
 		00001 (1)  | 11111
 	*/
-	constexpr uint32_t all_highest_bits(uint32_t p_bits)
+	constexpr std::uint32_t all_highest_bits(std::uint32_t p_bits)
 	{
-		uint32_t mask = p_bits;
+		std::uint32_t mask = p_bits;
 		mask |= mask >> 1;
 		mask |= mask >> 2;
 		mask |= mask >> 4;
@@ -35,9 +35,9 @@ namespace jkutil
 		return mask;
 	}
 
-	constexpr uint64_t all_highest_bits(uint64_t p_bits)
+	constexpr std::uint64_t all_highest_bits(std::uint64_t p_bits)
 	{
-		uint64_t mask = p_bits;
+		std::uint64_t mask = p_bits;
 		mask |= mask >> 1;
 		mask |= mask >> 2;
 		mask |= mask >> 4;
@@ -58,15 +58,15 @@ namespace jkutil
 		00000 (0)  | 00000
 		00111 (7)  | 00100
 	*/
-	constexpr uint32_t set_highest_bit(uint32_t p_bits)
+	constexpr std::uint32_t set_highest_bit(std::uint32_t p_bits)
 	{
-		uint32_t temp = all_highest_bits(p_bits);
+		std::uint32_t temp = all_highest_bits(p_bits);
 		return temp ^ (temp >> 1);
 	}
 
-	constexpr uint64_t set_highest_bit(uint64_t p_bits)
+	constexpr std::uint64_t set_highest_bit(std::uint64_t p_bits)
 	{
-		uint64_t temp = all_highest_bits(p_bits);
+		std::uint64_t temp = all_highest_bits(p_bits);
 		return temp ^ (temp >> 1);
 	}
 
@@ -81,9 +81,9 @@ namespace jkutil
 		10000 (16) | 11111
 		00001 (1)  | 00001
 	*/
-	constexpr uint32_t all_lowest_bits(uint32_t p_bits)
+	constexpr std::uint32_t all_lowest_bits(std::uint32_t p_bits)
 	{
-		uint32_t mask = p_bits;
+		std::uint32_t mask = p_bits;
 		mask |= mask << 1;
 		mask |= mask << 2;
 		mask |= mask << 4;
@@ -92,9 +92,9 @@ namespace jkutil
 		return mask;
 	}
 
-	constexpr uint64_t all_lowest_bits(uint64_t p_bits)
+	constexpr std::uint64_t all_lowest_bits(std::uint64_t p_bits)
 	{
-		uint64_t mask = p_bits;
+		std::uint64_t mask = p_bits;
 		mask |= mask << 1;
 		mask |= mask << 2;
 		mask |= mask << 4;
@@ -115,15 +115,15 @@ namespace jkutil
 		00000 (0)  | 00000
 		00111 (7)  | 00001
 	*/
-	constexpr uint32_t set_lowest_bit(uint32_t p_bits)
+	constexpr std::uint32_t set_lowest_bit(std::uint32_t p_bits)
 	{
-		uint32_t temp = all_lowest_bits(p_bits);
+		std::uint32_t temp = all_lowest_bits(p_bits);
 		return temp ^ (temp << 1);
 	}
 
-	constexpr uint64_t set_lowest_bit(uint64_t p_bits)
+	constexpr std::uint64_t set_lowest_bit(std::uint64_t p_bits)
 	{
-		uint64_t temp = all_lowest_bits(p_bits);
+		std::uint64_t temp = all_lowest_bits(p_bits);
 		return temp ^ (temp << 1);
 	}
 
@@ -131,16 +131,16 @@ namespace jkutil
 		@brief Rounds up to the nearest power of two
 		@details For any number more than '2^31' (32 bit) or '2^63' (64 bit) returns '2^31' or '2^63' respectively.
 	*/
-	constexpr uint32_t ceil_pow2(uint32_t p_number)
+	constexpr std::uint32_t ceil_pow2(std::uint32_t p_number)
 	{
-		uint32_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
-		return result == 0 ? set_highest_bit(std::numeric_limits<uint32_t>::max()) : result;
+		std::uint32_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
+		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint32_t>::max()) : result;
 	}
 
-	constexpr uint64_t ceil_pow2(uint64_t p_number)
+	constexpr std::uint64_t ceil_pow2(std::uint64_t p_number)
 	{
-		uint64_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
-		return result == 0 ? set_highest_bit(std::numeric_limits<uint64_t>::max()) : result;
+		std::uint64_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
+		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint64_t>::max()) : result;
 	}
 
 }

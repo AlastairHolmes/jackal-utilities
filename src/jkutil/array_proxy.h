@@ -11,6 +11,7 @@
 #include <utility>
 #include <limits>
 #include <stdexcept>
+#include <cstddef>
 
 namespace jkutil
 {
@@ -38,8 +39,8 @@ namespace jkutil
 		typedef const elementType&															const_reference;
 		typedef elementType*																iterator;
 		typedef const elementType*															const_iterator;
-		typedef size_t																		size_type;
-		typedef ptrdiff_t																	difference_type;
+		typedef std::size_t																	size_type;
+		typedef std::ptrdiff_t																	difference_type;
 
 	public:
 
@@ -92,7 +93,7 @@ namespace jkutil
 	}
 
 	template <class elementType>
-	array_proxy<elementType> make_array_proxy(size_t p_count, elementType* p_elements)
+	array_proxy<elementType> make_array_proxy(std::size_t p_count, elementType* p_elements)
 	{
 		return array_proxy<elementType>(p_count, p_elements);
 	}

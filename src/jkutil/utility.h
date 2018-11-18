@@ -15,13 +15,13 @@ namespace jkutil
 	namespace _jkinternal
 	{
 
-		template <class callableType, class tupleType, size_t... indexValues>
+		template <class callableType, class tupleType, std::size_t... indexValues>
 		void tuple_map_impl(tupleType& p_tuple, callableType&& p_callable, std::index_sequence<indexValues...>)
 		{
 			(std::forward<callableType>(p_callable)(std::get<indexValues>(p_tuple)), ...);
 		}
 
-		template <class callableType, class tupleType, size_t... indexValues>
+		template <class callableType, class tupleType, std::size_t... indexValues>
 		auto tuple_map_return_impl(tupleType& p_tuple, callableType&& p_callable, std::index_sequence<indexValues...>) -> std::tuple<decltype(std::forward<callableType>(p_callable)(std::get<indexValues>(p_tuple)))...>
 		{
 			return std::forward_as_tuple(std::forward<callableType>(p_callable)(std::get<indexValues>(p_tuple))...);

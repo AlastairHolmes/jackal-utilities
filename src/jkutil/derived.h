@@ -143,7 +143,7 @@ namespace jkutil
 		bool has_value() const;
 		const baseType* get() const;
 		baseType* get();
-		size_t size() const;
+		std::size_t size() const;
 
 		const storableAllocatorType& get_allocator() const;
 
@@ -352,7 +352,7 @@ namespace jkutil
 	}
 
 	template<class baseType, class storableAllocatorType>
-	inline size_t derived<baseType, storableAllocatorType>::size() const
+	inline std::size_t derived<baseType, storableAllocatorType>::size() const
 	{
 		return (m_container) ? m_container->size() : 0;
 	}
@@ -509,7 +509,7 @@ namespace jkutil
 		bool has_value() const;
 		const baseType* get() const;
 		baseType* get();
-		size_t size() const;
+		std::size_t size() const;
 
 		const storableAllocatorType& get_allocator() const;
 
@@ -760,7 +760,7 @@ namespace jkutil
 	}
 
 	template<class baseType, class storableAllocatorType>
-	inline size_t derived_copyable<baseType, storableAllocatorType>::size() const
+	inline std::size_t derived_copyable<baseType, storableAllocatorType>::size() const
 	{
 		return (m_container) ? m_container->size() : 0;
 	}

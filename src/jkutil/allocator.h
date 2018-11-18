@@ -8,15 +8,16 @@
 #define JKUTIL_ALLOCATOR_H
 
 #include <jkutil\type_traits.h>
+#include <cstddef>
 
 namespace jkutil
 {
 
 	// Named Requirment: JKAllocator
-		// void* allocate(size_t p_size, size_t p_alignment);
+		// void* allocate(std::size_t p_size, std::size_t p_alignment);
 			//Allocates a block of memory of size \c p_size and alignment \c p_alignment. May throw exceptions.
 			//Returns a pointer to the allocated memory.
-		// void deallocate(void* p_ptr, size_t p_size);
+		// void deallocate(void* p_ptr, std::size_t p_size);
 			//Deallocates storage pointed to p_ptr, which must be a value returned by a
 			//previous call to allocate that has not been invalidated by an intervening
 			//call to deallocate. p_size must match the value previously passed to allocate.
@@ -66,8 +67,8 @@ namespace jkutil
 	{
 	public:
 
-		virtual void* allocate(size_t p_size, size_t p_alignment) = 0;
-		virtual void deallocate(void* p_ptr, size_t p_size) = 0;
+		virtual void* allocate(std::size_t p_size, std::size_t p_alignment) = 0;
+		virtual void deallocate(void* p_ptr, std::size_t p_size) = 0;
 
 	};
 
@@ -99,21 +100,21 @@ namespace jkutil
 		}
 
 		/*!
-			@fn void* allocate(size_t p_size, size_t p_alignment)
+			@fn void* allocate(std::size_t p_size, std::size_t p_alignment)
 			@brief Passes allocation requests directly to the internal instance of \c allocatorType.
 			@see virtual_allocator::allocate
 		*/
-		virtual void* allocate(size_t p_size, size_t p_alignment) override final
+		virtual void* allocate(std::size_t p_size, std::size_t p_alignment) override final
 		{
 			return m_allocator.allocate(p_size, p_alignment);
 		}
 
 		/*!
-			@fn void deallocate(void* p_ptr, size_t p_size)
+			@fn void deallocate(void* p_ptr, std::size_t p_size)
 			@brief Passes deallocation requests directly to the internal instance of \c allocatorType.
 			@see virtual_allocator::deallocate
 		*/
-		virtual void deallocate(void* p_ptr, size_t p_size) override final
+		virtual void deallocate(void* p_ptr, std::size_t p_size) override final
 		{
 			m_allocator.deallocate(p_ptr, p_size);
 		}
@@ -140,21 +141,21 @@ namespace jkutil
 		using is_always_equal = std::true_type;
 
 		/*!
-			@fn void* allocate(size_t p_size, size_t p_alignment);
+			@fn void* allocate(std::size_t p_size, std::size_t p_alignment);
 			@brief Allocates and returns a block of memory, using jkutil::aligned_malloc
 			@see jkutil::aligned_malloc
 		*/
-		void* allocate(size_t p_size, size_t p_alignment);
+		void* allocate(std::size_t p_size, std::size_t p_alignment);
 
 		/*!
-			@fn void deallocate(void* p_ptr, size_t p_size);
+			@fn void deallocate(void* p_ptr, std::size_t p_size);
 			@brief Deallocates the memory pointed by \p p_ptr, using jkutil::aligned_free
 			@details Deallocates storage pointed to p_ptr, which must be a value returned by a
 			previous call to allocate that has not been invalidated by an intervening
 			call to deallocate.
 			@see jkutil::aligned_free
 		*/
-		void deallocate(void* p_ptr, size_t p_size);
+		void deallocate(void* p_ptr, std::size_t p_size);
 
 		bool operator==(const allocator& p_instance) const;
 		bool operator!=(const allocator& p_instance) const;
@@ -180,7 +181,7 @@ namespace jkutil
 	public:
 
 		using value_type = elementType;
-		using size_type = size_t;
+		using size_type = std::size_t;
 		using pointer = elementType*;
 
 		using propagate_on_container_copy_assignment = typename storableAllocatorType::propagate_on_container_copy_assignment;

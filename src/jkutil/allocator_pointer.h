@@ -7,9 +7,10 @@
 #ifndef JKUTIL_ALLOCATOR_POINTER_H
 #define JKUTIL_ALLOCATOR_POINTER_H
 
+#include <jkutil\assert.h>
 #include <stdexcept>
 #include <type_traits>
-#include <jkutil\assert.h>
+#include <cstddef>
 
 namespace jkutil
 {
@@ -81,14 +82,14 @@ namespace jkutil
 
 			@details If no allocator instance is referred to a call to allocate() will throw a std::bad_alloc.
 		*/
-		void* allocate(size_t p_size, size_t p_alignment);
+		void* allocate(std::size_t p_size, std::size_t p_alignment);
 
 		/*!
 			@brief Deallocates memory using the referred to allocator.
 
 			@details If no allocator instance is referred to a call to deallocate() will assert (In debug mode). If the underlying allocator cam throw this can also throw.
 		*/
-		void deallocate(void* p_ptr, size_t p_size);
+		void deallocate(void* p_ptr, std::size_t p_size);
 
 		/*! @brief Get a pointer to the referred to allocator. Can return nullptr. */
 		allocatorType* get_internal_allocator() const;
@@ -158,7 +159,7 @@ namespace jkutil
 	}
 
 	template<class allocatorType, bool propagatePointer>
-	inline void * allocator_pointer<allocatorType, propagatePointer>::allocate(size_t p_size, size_t p_alignment)
+	inline void * allocator_pointer<allocatorType, propagatePointer>::allocate(std::size_t p_size, std::size_t p_alignment)
 	{
 		if (!m_allocator)
 		{
@@ -168,7 +169,7 @@ namespace jkutil
 	}
 
 	template<class allocatorType, bool propagatePointer>
-	inline void allocator_pointer<allocatorType, propagatePointer>::deallocate(void * p_ptr, size_t p_size)
+	inline void allocator_pointer<allocatorType, propagatePointer>::deallocate(void * p_ptr, std::size_t p_size)
 	{
 		JKUTIL_ASSERT(m_allocator);
 		if (m_allocator)

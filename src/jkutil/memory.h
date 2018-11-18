@@ -8,6 +8,7 @@
 #define JKUTIL_MEMORY_H
 
 #include <jkutil\assert.h>
+#include <cstddef>
 
 namespace jkutil
 {
@@ -18,7 +19,7 @@ namespace jkutil
 		@note Memory returned from this function can not be deallocated using a system's free() function,
 		but only by using \c jkutil::aligned_free().
 	*/
-	void* aligned_malloc(size_t p_size, size_t p_alignment);
+	void* aligned_malloc(std::size_t p_size, std::size_t p_alignment);
 
 	/*!
 		@brief Deallocates memory using the system's free function.
@@ -26,7 +27,7 @@ namespace jkutil
 		that has not been invalidated by an intervening call to deallocate. \p p_size must match the value preiouvsly passed to
 		\c jkutil::aligned_malloc().
 	*/
-	void aligned_free(void* p_ptr, size_t p_size);
+	void aligned_free(void* p_ptr, std::size_t p_size);
 
 	/*!
 		@brief Does a memory copy using memcpy().
@@ -34,21 +35,21 @@ namespace jkutil
 		memcpy is undefined for nullptrs even if the size is zero. This function is valid
 		is all reasonable cases, and will assert if not valid.
 	*/
-	void memory_copy(void* p_destination, const void* p_source, size_t p_size);
+	void memory_copy(void* p_destination, const void* p_source, std::size_t p_size);
 
 	/*!
 		@brief Allocates memory using \p p_allocator of \p p_size bytes and alignment \p p_alignment.
 		@return A ptr to the allocated memory.
 	*/
 	template <class allocatorType>
-	inline void* memory_allocate(allocatorType& p_allocator, size_t p_size, size_t p_alignment)
+	inline void* memory_allocate(allocatorType& p_allocator, std::size_t p_size, std::size_t p_alignment)
 	{
 		return p_allocator.allocate(p_size, p_alignment);
 	}
 
 	/*! @brief Deallocates \p p_memory using \p p_allocator of \p p_size bytes. */
 	template <class allocatorType>
-	inline void memory_deallocate(allocatorType& p_allocator, void* p_memory, size_t p_size)
+	inline void memory_deallocate(allocatorType& p_allocator, void* p_memory, std::size_t p_size)
 	{
 		p_allocator.deallocate(p_memory, p_size);
 	}
@@ -93,7 +94,7 @@ namespace jkutil
 	{
 	public:
 
-		deallocate_guard(allocatorType& p_allocator, void* p_memory, size_t p_size, bool p_enabled = true);
+		deallocate_guard(allocatorType& p_allocator, void* p_memory, std::size_t p_size, bool p_enabled = true);
 
 		deallocate_guard(const deallocate_guard&) = delete;
 		deallocate_guard(deallocate_guard&& p_instance);
@@ -119,12 +120,12 @@ namespace jkutil
 		allocatorType& get_allocator();
 
 		void* m_memory;
-		size_t m_size;
+		std::size_t m_size;
 
 	};
 
 	template<class allocatorType>
-	inline deallocate_guard<allocatorType>::deallocate_guard(allocatorType& p_allocator, void* p_memory, size_t p_size, bool p_enabled)
+	inline deallocate_guard<allocatorType>::deallocate_guard(allocatorType& p_allocator, void* p_memory, std::size_t p_size, bool p_enabled)
 		: m_has_run(false),
 		m_enabled(p_enabled),
 		m_allocator(p_allocator),
@@ -187,15 +188,15 @@ namespace jkutil
 	{
 	public:
 
-		allocate_guard(allocatorType& p_allocator, size_t p_size, size_t p_alignment, bool p_enabled = true);
+		allocate_guard(allocatorType& p_allocator, std::size_t p_size, std::size_t p_alignment, bool p_enabled = true);
 
 		void* data() const;
-		size_t size() const;
+		std::size_t size() const;
 
 	};
 
 	template<class allocatorType>
-	inline allocate_guard<allocatorType>::allocate_guard(allocatorType& p_allocator, size_t p_size, size_t p_alignment, bool p_enabled)
+	inline allocate_guard<allocatorType>::allocate_guard(allocatorType& p_allocator, std::size_t p_size, std::size_t p_alignment, bool p_enabled)
 		: deallocate_guard<allocatorType>(p_allocator, nullptr, p_size, false)
 	{
 		m_memory = memory_allocate(p_allocator, p_size, p_alignment);
@@ -212,19 +213,19 @@ namespace jkutil
 	}
 
 	template<class allocatorType>
-	inline size_t allocate_guard<allocatorType>::size() const
+	inline std::size_t allocate_guard<allocatorType>::size() const
 	{
 		return m_size;
 	}
 
 	template <class allocatorType>
-	deallocate_guard<allocatorType> make_deallocate_guard(allocatorType& p_allocator, void* p_memory, size_t p_size, bool p_enabled = true)
+	deallocate_guard<allocatorType> make_deallocate_guard(allocatorType& p_allocator, void* p_memory, std::size_t p_size, bool p_enabled = true)
 	{
 		return deallocate_guard<allocatorType>(p_allocator, p_memory, p_size, p_enabled);
 	}
 
 	template <class allocatorType>
-	allocate_guard<allocatorType> make_allocate_guard(allocatorType& p_allocator, size_t p_size, size_t p_alignment, bool p_enabled = true)
+	allocate_guard<allocatorType> make_allocate_guard(allocatorType& p_allocator, std::size_t p_size, std::size_t p_alignment, bool p_enabled = true)
 	{
 		return allocate_guard<allocatorType>(p_allocator, p_size, p_alignment, p_enabled);
 	}

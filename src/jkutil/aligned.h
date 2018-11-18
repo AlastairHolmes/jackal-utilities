@@ -8,6 +8,7 @@
 #define JKUTIL_ALIGNED_H
 
 #include <jkutil\bitwise.h>
+#include <cstddef>
 
 namespace jkutil
 {
@@ -29,7 +30,7 @@ namespace jkutil
 
 		@attention \c elementAlignment must be a power of two. 
 	*/
-	template <class elementType, size_t elementAlignment = alignof(elementType)>
+	template <class elementType, std::size_t elementAlignment = alignof(elementType)>
 	struct aligned
 	{
 
@@ -52,13 +53,13 @@ namespace jkutil
 
 	};
 
-	template<class elementType, size_t elementAlignment>
+	template<class elementType, std::size_t elementAlignment>
 	inline aligned<elementType, elementAlignment>::aligned(const elementType& p_element)
 		: value(p_element)
 	{
 	}
 
-	template<class elementType, size_t elementAlignment>
+	template<class elementType, std::size_t elementAlignment>
 	inline aligned<elementType, elementAlignment>::aligned(elementType&& p_element)
 		: value(std::move(p_element))
 	{
