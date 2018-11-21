@@ -40,7 +40,7 @@ namespace jkutil
 		typedef elementType*																iterator;
 		typedef const elementType*															const_iterator;
 		typedef std::size_t																	size_type;
-		typedef std::ptrdiff_t																	difference_type;
+		typedef std::ptrdiff_t																difference_type;
 
 	public:
 
