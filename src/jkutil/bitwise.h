@@ -7,6 +7,7 @@
 #ifndef JKUTIL_BITWISE_H
 #define JKUTIL_BITWISE_H
 
+#include <jkutil\assert.h>
 #include <cstdint>
 #include <limits>
 
@@ -141,6 +142,69 @@ namespace jkutil
 	{
 		std::uint64_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
 		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint64_t>::max()) : result;
+	}
+
+#define JKUTIL_LOG_TABLE(x) x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x
+
+	static const constexpr uint8_t log_table_256[256] =
+	{
+		0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+		JKUTIL_LOG_TABLE(4),
+		JKUTIL_LOG_TABLE(5), JKUTIL_LOG_TABLE(5),
+		JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6),
+		JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7)
+	};
+
+	constexpr std::uint32_t int_log2(std::uint32_t p_number)
+	{
+		JKUTIL_ASSERT(p_number != 0);
+
+		std::uint32_t result = 0;
+		std::uint32_t t = 0, tt = 0;
+
+		if (t = p_number >> 16)
+		{
+			result = (tt = t >> 8) ? 24 + log_table_256[tt] : 16 + log_table_256[t];
+		}
+		else
+		{
+			result = (t = p_number >> 8) ? 8 + log_table_256[t] : 0 + log_table_256[p_number];
+		}
+
+		return result;
+	}
+
+	constexpr std::uint64_t int_log(std::uint64_t p_number)
+	{
+		JKUTIL_ASSERT(p_number != 0);
+
+		std::uint64_t result = 0;
+		std::uint64_t t = 0, tt = 0;
+
+		if (tt = p_number >> 32)
+		{
+			if (t = tt >> 16)
+			{
+				result = (tt = t >> 8) ? 56 + log_table_256[tt] : 48 + log_table_256[t];
+			}
+			else
+			{
+				result = (t = tt >> 8) ? 40 + log_table_256[t] : 32 + log_table_256[tt];
+			}
+		}
+		else
+		{
+			if (t = p_number >> 16)
+			{
+				result = (tt = t >> 8) ? 24 + log_table_256[tt] : 16 + log_table_256[t];
+			}
+			else
+			{
+				result = (t = p_number >> 8) ? 8 + log_table_256[t] : 0 + log_table_256[p_number];
+			}
+		}
+
+		return result;
 	}
 
 }
