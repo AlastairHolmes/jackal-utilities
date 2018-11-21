@@ -144,16 +144,21 @@ namespace jkutil
 		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint64_t>::max()) : result;
 	}
 
+	namespace _jkinternal
+	{
+
 #define JKUTIL_LOG_TABLE(x) x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x
 
-	static const constexpr uint8_t log_table_256[256] =
-	{
-		0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
-		JKUTIL_LOG_TABLE(4),
-		JKUTIL_LOG_TABLE(5), JKUTIL_LOG_TABLE(5),
-		JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6),
-		JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7)
-	};
+		static const constexpr uint8_t log_table_256[256] =
+		{
+			0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+			JKUTIL_LOG_TABLE(4),
+			JKUTIL_LOG_TABLE(5), JKUTIL_LOG_TABLE(5),
+			JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6), JKUTIL_LOG_TABLE(6),
+			JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7), JKUTIL_LOG_TABLE(7)
+		};
+
+	}
 
 	constexpr std::uint32_t int_log2(std::uint32_t p_number)
 	{
@@ -164,11 +169,11 @@ namespace jkutil
 
 		if (t = p_number >> 16)
 		{
-			result = (tt = t >> 8) ? 24 + log_table_256[tt] : 16 + log_table_256[t];
+			result = (tt = t >> 8) ? 24 + _jkinternal::log_table_256[tt] : 16 + _jkinternal::log_table_256[t];
 		}
 		else
 		{
-			result = (t = p_number >> 8) ? 8 + log_table_256[t] : 0 + log_table_256[p_number];
+			result = (t = p_number >> 8) ? 8 + _jkinternal::log_table_256[t] : 0 + _jkinternal::log_table_256[p_number];
 		}
 
 		return result;
@@ -185,22 +190,22 @@ namespace jkutil
 		{
 			if (t = tt >> 16)
 			{
-				result = (tt = t >> 8) ? 56 + log_table_256[tt] : 48 + log_table_256[t];
+				result = (tt = t >> 8) ? 56 + _jkinternal::log_table_256[tt] : 48 + _jkinternal::log_table_256[t];
 			}
 			else
 			{
-				result = (t = tt >> 8) ? 40 + log_table_256[t] : 32 + log_table_256[tt];
+				result = (t = tt >> 8) ? 40 + _jkinternal::log_table_256[t] : 32 + _jkinternal::log_table_256[tt];
 			}
 		}
 		else
 		{
 			if (t = p_number >> 16)
 			{
-				result = (tt = t >> 8) ? 24 + log_table_256[tt] : 16 + log_table_256[t];
+				result = (tt = t >> 8) ? 24 + _jkinternal::log_table_256[tt] : 16 + _jkinternal::log_table_256[t];
 			}
 			else
 			{
-				result = (t = p_number >> 8) ? 8 + log_table_256[t] : 0 + log_table_256[p_number];
+				result = (t = p_number >> 8) ? 8 + _jkinternal::log_table_256[t] : 0 + _jkinternal::log_table_256[p_number];
 			}
 		}
 
