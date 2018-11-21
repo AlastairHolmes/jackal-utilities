@@ -16,7 +16,7 @@
 namespace jkutil
 {
 
-	template <class elementType, class storableAllocatorType>
+	template <class elementType, class storableAllocatorType = jkutil::allocator>
 	class vector
 	{
 	private:
