@@ -19,12 +19,15 @@ namespace jkutil
 	{
 	public:
 
-		using value_type = std::tuple<typename iteratorTypes::value_type...>;
-		using reference = std::tuple<typename iteratorTypes::reference...>;
+		using value_type = std::tuple<typename std::iterator_traits<iteratorTypes>::value_type...>;
+		using difference_type = std::common_type_t<typename std::iterator_traits<iteratorTypes>::difference_type...>;
+		using reference = std::tuple<typename std::iterator_traits<iteratorTypes>::reference...>;
+		using pointer = std::tuple<typename std::iterator_traits<iteratorTypes>::pointer...>;
+		using iterator_category = std::input_iterator_tag;
 
 	public:
 
-		zip_iterator(const iteratorTypes&... p_iterators);
+		zip_iterator(iteratorTypes&&... p_iterators);
 
 		zip_iterator(const zip_iterator&) = default;
 		zip_iterator(zip_iterator&&) = default;
@@ -32,17 +35,14 @@ namespace jkutil
 		zip_iterator& operator=(const zip_iterator&) = default;
 		zip_iterator& operator=(zip_iterator&&) = default;
 
+		bool operator==(const zip_iterator& p_rhs) const;
+		bool operator!=(const zip_iterator& p_rhs) const;
+
 		zip_iterator& operator++();
 		zip_iterator operator++(int);
 
-		zip_iterator& operator--();
-		zip_iterator operator--(int);
-
-		bool operator!=(const zip_iterator& p_rhs);
-
-		bool operator==(const zip_iterator& p_rhs);
-
-		std::tuple<typename iteratorTypes::reference...> operator*() const;
+		reference operator*() const;
+		pointer operator->() const;
 
 	private:
 
@@ -54,8 +54,8 @@ namespace jkutil
 	};
 
 	template <class... iteratorTypes>
-	zip_iterator<iteratorTypes...>::zip_iterator(const iteratorTypes&... p_iterators)
-		: m_iterators(p_iterators...)
+	zip_iterator<iteratorTypes...>::zip_iterator(iteratorTypes&&... p_iterators)
+		: m_iterators(std::forward<iteratorTypes>(p_iterators)...)
 	{
 	}
 
@@ -78,41 +78,32 @@ namespace jkutil
 	}
 
 	template <class... iteratorTypes>
-	auto zip_iterator<iteratorTypes...>::operator--() -> zip_iterator&
-	{
-		tuple_map(m_iterators, [](auto& x)
-		{
-			--x;
-		});
-		return *this;
-	}
-
-	template <class... iteratorTypes>
-	auto zip_iterator<iteratorTypes...>::operator--(int) -> zip_iterator
-	{
-		zip_iterator copy(*this);
-		--(*this);
-		return copy;
-	}
-
-	template <class... iteratorTypes>
-	bool zip_iterator<iteratorTypes...>::operator!=(const zip_iterator& p_rhs)
+	bool zip_iterator<iteratorTypes...>::operator!=(const zip_iterator& p_rhs) const
 	{
 		return !(*this == p_rhs);
 	}
 
 	template <class... iteratorTypes>
-	bool zip_iterator<iteratorTypes...>::operator==(const zip_iterator& p_rhs)
+	bool zip_iterator<iteratorTypes...>::operator==(const zip_iterator& p_rhs) const
 	{
 		return equality_impl(p_rhs.m_iterators, std::make_index_sequence<sizeof...(iteratorTypes)>{});
 	}
 
 	template <class... iteratorTypes>
-	std::tuple<typename iteratorTypes::reference...> zip_iterator<iteratorTypes...>::operator*() const
+	auto zip_iterator<iteratorTypes...>::operator*() const -> reference 
 	{
 		return tuple_map_return(m_iterators, [](auto p_iterator) -> decltype(*p_iterator)
 		{
 			return *p_iterator;
+		});
+	}
+
+	template<class... iteratorTypes>
+	inline auto zip_iterator<iteratorTypes...>::operator->() const -> pointer
+	{
+		return tuple_map_return(m_iterators, [](auto p_iterator) -> decltype(*p_iterator)
+		{
+			return jkutil::arrow_operator(p_iterator);
 		});
 	}
 
@@ -124,9 +115,9 @@ namespace jkutil
 	}
 
 	template <class... iteratorTypes>
-	zip_iterator<iteratorTypes...> make_zip_iterator(const iteratorTypes&... p_iterator)
+	zip_iterator<std::decay_t<iteratorTypes>...> make_zip_iterator(iteratorTypes&&... p_iterator)
 	{
-		return zip_iterator<iteratorTypes...>(p_iterator...);
+		return zip_iterator<std::decay_t<iteratorTypes>...>(std::forward<iteratorTypes>(p_iterator)...);
 	}
 
 	template <class... zippedContainerTypes>
