@@ -256,7 +256,7 @@ namespace jkutil
 	inline void derived<baseType, storableAllocatorType>::emplace(argumentTypes&&... p_arguments)
 	{
 		static_assert(std::is_move_constructible_v<elementType>);
-
+		static_assert(std::is_convertible_v<elementType*, baseType*>, "derived<type> can only contain types that are either 'type' or publically inherit 'type' (Note possibly transitively).");
 		reset();
 		set_container(jkutil::create<jkutil::_jkinternal::moveable_object_container<elementType, baseType>>(m_allocator, std::forward<argumentTypes>(p_arguments)...));
 	}
@@ -665,6 +665,7 @@ namespace jkutil
 	inline void derived_copyable<baseType, storableAllocatorType>::emplace(argumentTypes&&... p_arguments)
 	{
 		static_assert(std::is_copy_assignable_v<elementType> && std::is_move_assignable_v<elementType>);
+		static_assert(std::is_convertible_v<elementType*,baseType*>, "derived_copyable<type> can only contain types that are either 'type' or publically inherit 'type' (Note possibly transitively).");
 		reset();
 		set_container(jkutil::create<jkutil::_jkinternal::cloneable_object_container<elementType, baseType>>(m_allocator, std::forward<argumentTypes>(p_arguments)...));
 	}
