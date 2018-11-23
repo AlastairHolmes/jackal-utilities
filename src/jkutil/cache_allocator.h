@@ -109,12 +109,12 @@ namespace jkutil
 			return  *this;
 		}
 
-		bool operator==(const safe_cache_allocator& p_rhs)
+		bool operator==(const safe_cache_allocator& p_rhs) const
 		{
 			return m_allocator == p_rhs.m_allocator;
 		}
 
-		bool operator!=(const safe_cache_allocator& p_rhs)
+		bool operator!=(const safe_cache_allocator& p_rhs) const
 		{
 			return m_allocator != p_rhs.m_allocator;
 		}
@@ -266,12 +266,12 @@ namespace jkutil
 
 		}
 
-		bool operator==(const cache_allocator& p_rhs)
+		bool operator==(const cache_allocator& p_rhs) const
 		{
 			return m_allocator == p_rhs.m_allocator && (m_element_size == p_rhs.m_element_size) && (m_element_alignment == p_rhs.m_element_alignment);
 		}
 
-		bool operator!=(const cache_allocator& p_rhs)
+		bool operator!=(const cache_allocator& p_rhs) const
 		{
 			return m_allocator != p_rhs.m_allocator || (m_element_size != p_rhs.m_element_size) || (m_element_alignment != p_rhs.m_element_alignment);
 		}
