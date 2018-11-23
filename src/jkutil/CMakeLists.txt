@@ -29,6 +29,14 @@ target_compile_features(JKUtil PUBLIC
 			"${CMAKE_CURRENT_LIST_DIR}/utility.h")
 
 	AddSourcesToTarget(JKUtil
+		GROUP "Header Files\\Iterators"
+		SCOPE PRIVATE
+		INSTALL_DESTINATION "include/jkutil"
+		FILES
+			"${CMAKE_CURRENT_LIST_DIR}/selective_iterator.h"
+			"${CMAKE_CURRENT_LIST_DIR}/transform_iterator.h")
+
+	AddSourcesToTarget(JKUtil
 		GROUP "Header Files\\Containers"
 		SCOPE PRIVATE
 		INSTALL_DESTINATION "include/jkutil"
