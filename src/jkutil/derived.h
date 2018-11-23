@@ -454,6 +454,12 @@ namespace jkutil
 		m_element = nullptr;
 	}
 
+	template<class baseType, class storableAllocatorType>
+	void swap(derived<baseType, storableAllocatorType>& p_instance1, derived<baseType, storableAllocatorType>& p_instance2)
+	{
+		p_instance1.swap(p_instance2);
+	}
+
 	//----------------------------------------------------//
 
 	template <class baseType, class storableAllocatorType>
@@ -868,6 +874,12 @@ namespace jkutil
 	{
 		m_container = nullptr;
 		m_element = nullptr;
+	}
+
+	template<class baseType, class storableAllocatorType>
+	void swap(derived_copyable<baseType, storableAllocatorType>& p_instance1, derived_copyable<baseType, storableAllocatorType>& p_instance2)
+	{
+		p_instance1.swap(p_instance2);
 	}
 
 }
