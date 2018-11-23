@@ -67,7 +67,7 @@ namespace jkutil
 			@details This equality operation uses a deep equality test, not simple pointer equality, meaning it is use \c allocatorType's
 			equality operator.
 		*/
-		bool operator==(const allocator_pointer& p_rhs);
+		bool operator==(const allocator_pointer& p_rhs) const;
 
 		/*!
 			@brief Deep compares two allocator_pointer
@@ -75,7 +75,7 @@ namespace jkutil
 			@details This equality operation uses a deep equality test, not simple pointer equality, meaning it is uses \c allocatorType's
 			equality operator.
 		*/
-		bool operator!=(const allocator_pointer& p_rhs);
+		bool operator!=(const allocator_pointer& p_rhs) const;
 
 		/*!
 			@brief Allocates memory using the referred to allocator.
@@ -133,7 +133,7 @@ namespace jkutil
 	}
 
 	template<class allocatorType, bool propagatePointer>
-	inline bool allocator_pointer<allocatorType, propagatePointer>::operator==(const allocator_pointer& p_rhs)
+	inline bool allocator_pointer<allocatorType, propagatePointer>::operator==(const allocator_pointer& p_rhs) const
 	{
 		if (m_allocator && p_rhs.m_allocator)
 		{
@@ -146,7 +146,7 @@ namespace jkutil
 	}
 
 	template<class allocatorType, bool propagatePointer>
-	inline bool allocator_pointer<allocatorType, propagatePointer>::operator!=(const allocator_pointer& p_rhs)
+	inline bool allocator_pointer<allocatorType, propagatePointer>::operator!=(const allocator_pointer& p_rhs) const
 	{
 		if (m_allocator && p_rhs.m_allocator)
 		{
@@ -159,7 +159,7 @@ namespace jkutil
 	}
 
 	template<class allocatorType, bool propagatePointer>
-	inline void * allocator_pointer<allocatorType, propagatePointer>::allocate(std::size_t p_size, std::size_t p_alignment)
+	inline void* allocator_pointer<allocatorType, propagatePointer>::allocate(std::size_t p_size, std::size_t p_alignment)
 	{
 		if (!m_allocator)
 		{
