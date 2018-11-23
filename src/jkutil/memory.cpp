@@ -14,7 +14,7 @@ namespace jkutil
 
 		JKUTIL_ASSERT(
 			p_alignment <= std::numeric_limits<align_header_t>::max && //Check the request alignment in less than the maximum possible alignment than can be guarenteed
-			jkutil::ceil_pow2(p_alignment) == p_alignment); //Check p_alignment is a power of two.
+			jkutil::is_pow2(p_alignment)); //Check p_alignment is a power of two.
 
 		//Ensures the alignment offset header is also aligned.
 		const std::size_t alignment = p_alignment > alignof(align_header_t) ? p_alignment : alignof(align_header_t);

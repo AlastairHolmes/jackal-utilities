@@ -129,21 +129,87 @@ namespace jkutil
 	}
 
 	/*!
+		@brief Rounds down to the nearest power of two
+		@details floor_pow2(0) == 0.
+	*/
+	constexpr std::uint32_t floor_pow2(std::uint32_t p_number)
+	{
+		return set_highest_bit(p_number);
+	}
+
+	constexpr std::uint64_t floor_pow2(std::uint64_t p_number)
+	{
+		return set_highest_bit(p_number);
+	}
+
+	/*!
 		@brief Rounds up to the nearest power of two
-		@details For any number more than '2^31' (32 bit) or '2^63' (64 bit) returns '2^31' or '2^63' respectively.
+		@details For any number more than '2^31' (32 bit) or '2^63' (64 bit) returns '0' or '0' respectively.
 	*/
 	constexpr std::uint32_t ceil_pow2(std::uint32_t p_number)
 	{
-		std::uint32_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
-		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint32_t>::max()) : result;
+		return set_highest_bit((p_number - 1) | 0x1) << 1;
 	}
 
 	constexpr std::uint64_t ceil_pow2(std::uint64_t p_number)
 	{
-		std::uint64_t result = (p_number < 2) ? 1 : set_highest_bit(p_number - 1) << 1;
+		return set_highest_bit((p_number - 1) | 0x1) << 1;
+	}
+
+	/*!
+		@brief Rounds down to the nearest power of two
+		@details For downto_pow2(0) == 1.
+		The purpose of this function is to act similarly to floor_pow2, but to guarantee it will always return a pow2, even
+		if the input is 0.
+	*/
+	constexpr std::uint32_t downto_pow2(std::uint32_t p_number)
+	{
+		std::uint32_t result = floor_pow2(p_number);
+		return result == 0 ? 1 : result;
+	}
+
+	constexpr std::uint64_t downto_pow2(std::uint64_t p_number)
+	{
+		std::uint64_t result = floor_pow2(p_number);
+		return result == 0 ? 1 : result;
+	}
+
+	/*!
+		@brief Rounds up to the nearest power of two
+		@details For any number more than '2^31' (32 bit) or '2^63' (64 bit) returns '2^31' or '2^63' respectively.
+		The purpose of this function is to act similarly to ceil_pow2, but to guarantee it will always return a pow2, even
+		if the ceil_pow2 operation cannot be done (Due to the result being too big).
+	*/
+	constexpr std::uint32_t upto_pow2(std::uint32_t p_number)
+	{
+		std::uint32_t result = ceil_pow2(p_number);
+		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint32_t>::max()) : result;
+	}
+
+	constexpr std::uint64_t upto_pow2(std::uint64_t p_number)
+	{
+		std::uint64_t result = ceil_pow2(p_number);
 		return result == 0 ? set_highest_bit(std::numeric_limits<std::uint64_t>::max()) : result;
 	}
 
+	/*!
+		@brief Checks if a number is a power of 2.
+	*/
+	constexpr bool is_pow2(std::uint32_t p_number)
+	{
+		return (p_number != 0) && (p_number & (p_number - 1)) == 0;
+	}
+
+	constexpr bool is_pow2(std::uint64_t p_number)
+	{
+		return (p_number != 0) && (p_number & (p_number - 1)) == 0;
+	}
+
+	/*!
+		@fn std::uint32_t int_log2(std::uint32_t p_number)
+		@brief Calculates the log2 of a number. Rounds result down to nearest integer.
+		@note int_log2(0) == 0
+	*/
 	namespace _jkinternal
 	{
 
@@ -179,7 +245,7 @@ namespace jkutil
 		return result;
 	}
 
-	constexpr std::uint64_t int_log(std::uint64_t p_number)
+	constexpr std::uint64_t int_log2(std::uint64_t p_number)
 	{
 		JKUTIL_ASSERT(p_number != 0);
 
@@ -210,6 +276,21 @@ namespace jkutil
 		}
 
 		return result;
+	}
+
+	/*!
+		@fn std::uint32_t int_ceil_log2(std::uint32_t p_number)
+		@brief Calculates the log2 of a number. Rounds result UP to nearest integer.
+		@note int_log2(0) == 1, int_log2(1) == 1
+	*/
+	constexpr std::uint32_t int_ceil_log2(std::uint32_t p_number)
+	{
+		return p_number > 1 ? int_log2(p_number - 1) + 1 : 1;
+	}
+
+	constexpr std::uint64_t int_ceil_log2(std::uint64_t p_number)
+	{
+		return p_number > 1 ? int_log2(p_number - 1) + 1 : 1;
 	}
 
 }
