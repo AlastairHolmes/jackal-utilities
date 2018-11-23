@@ -675,6 +675,12 @@ namespace jkutil
 		}
 	}
 
+	template <class elementType, class storableAllocatorType>
+	void swap(vector<elementType, storableAllocatorType>& p_instance1, vector<elementType, storableAllocatorType>& p_instance2)
+	{
+		p_instance1.swap(p_instance2);
+	}
+
 }
 
 #endif
