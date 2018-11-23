@@ -195,7 +195,7 @@ namespace jkutil
 			: m_allocator(p_allocator)
 		{}
 
-		allocator_stl_adapter(storableAllocatorType&& p_allocator)
+		allocator_stl_adapter(storableAllocatorType&& p_allocator = storableAllocatorType())
 			: m_allocator(std::move(p_allocator))
 		{}
 
