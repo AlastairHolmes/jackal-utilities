@@ -150,9 +150,9 @@ namespace jkutil
 		@return The created scoped_guard.
 	*/
 	template<class payloadCallable>
-	scoped_guard<payloadCallable> make_scoped_guard(payloadCallable&& p_callable)
+	scoped_guard<std::decay_t<payloadCallable>> make_scoped_guard(payloadCallable&& p_callable)
 	{
-		return scoped_guard<payloadCallable>(std::forward<payloadCallable>(p_callable));
+		return scoped_guard<std::decay_t<payloadCallable>>(std::forward<payloadCallable>(p_callable));
 	}
 
 }
