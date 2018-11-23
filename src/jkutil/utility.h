@@ -75,16 +75,23 @@ namespace jkutil
 
 	}
 
+	//To allow usage of range based for-loop with only iterators.
 	template <class iteratorType>
 	class iterator_range
 	{
 	public:
 
+		using value_type = typename std::iterator_traits<iteratorType>::value_type;
+		using const_iterator = iteratorType;
+		using iterator = iteratorType;
+
 		iterator_range(const iteratorType& p_begin, const iteratorType& p_end)
 			: m_begin(p_begin), m_end(p_end)
-		{
+		{}
 
-		}
+		iterator_range(iteratorType&& p_begin, iteratorType&& p_end)
+			: m_begin(std::move(p_begin)), m_end(std::move(p_end))
+		{}
 
 		iteratorType begin() const
 		{
@@ -103,9 +110,33 @@ namespace jkutil
 	};
 
 	template <class iteratorType>
-	iterator_range<iteratorType> make_iterator_range(const iteratorType& p_begin, const iteratorType& p_end)
+	iterator_range<std::decay_t<iteratorType>> make_iterator_range(iteratorType&& p_begin, iteratorType&& p_end)
 	{
-		return iterator_range<iteratorType>(p_begin, p_end);
+		return iterator_range<std::decay_t<iteratorType>>(std::forward<iteratorType>(p_begin), std::forward<iteratorType>(p_end));
+	}
+
+	template <class objectType>
+	decltype(auto) arrow_operator(const objectType& p_object)
+	{
+		return p_object.operator->();
+	}
+
+	template <class objectType>
+	decltype(auto) arrow_operator(const objectType* p_object)
+	{
+		return p_object;
+	}
+
+	template <class objectType>
+	decltype(auto) arrow_operator(objectType& p_object)
+	{
+		return p_object.operator->();
+	}
+
+	template <class objectType>
+	decltype(auto) arrow_operator(objectType* p_object)
+	{
+		return p_object;
 	}
 
 }
