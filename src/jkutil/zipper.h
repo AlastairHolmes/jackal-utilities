@@ -35,8 +35,15 @@ namespace jkutil
 		zip_iterator& operator=(const zip_iterator&) = default;
 		zip_iterator& operator=(zip_iterator&&) = default;
 
+	public:
+
 		bool operator==(const zip_iterator& p_rhs) const;
 		bool operator!=(const zip_iterator& p_rhs) const;
+
+		template <class... otherIteratorTypes>
+		bool operator==(const zip_iterator<otherIteratorTypes...>& p_rhs) const;
+		template <class... otherIteratorTypes>
+		bool operator!=(const zip_iterator<otherIteratorTypes...>& p_rhs) const;
 
 		zip_iterator& operator++();
 		zip_iterator operator++(int);
@@ -46,8 +53,8 @@ namespace jkutil
 
 	private:
 
-		template <std::size_t... indexValues>
-		bool equality_impl(const std::tuple<iteratorTypes...>& p_rhs, std::index_sequence<indexValues...>) const;
+		template <class... otherIteratorTypes, std::size_t... indexValues>
+		bool equality_impl(const std::tuple<otherIteratorTypes...>& p_rhs, std::index_sequence<indexValues...>) const;
 
 		std::tuple<iteratorTypes...> m_iterators;
 
@@ -60,21 +67,9 @@ namespace jkutil
 	}
 
 	template <class... iteratorTypes>
-	auto zip_iterator<iteratorTypes...>::operator++() -> zip_iterator&
+	bool zip_iterator<iteratorTypes...>::operator==(const zip_iterator& p_rhs) const
 	{
-		tuple_map(m_iterators, [](auto& x)
-		{
-			++x;
-		});
-		return *this;
-	}
-
-	template <class... iteratorTypes>
-	auto zip_iterator<iteratorTypes...>::operator++(int) -> zip_iterator
-	{
-		zip_iterator copy(*this);
-		++(*this);
-		return copy;
+		return equality_impl(p_rhs.m_iterators, std::make_index_sequence<sizeof...(iteratorTypes)>{});
 	}
 
 	template <class... iteratorTypes>
@@ -84,15 +79,46 @@ namespace jkutil
 	}
 
 	template <class... iteratorTypes>
-	bool zip_iterator<iteratorTypes...>::operator==(const zip_iterator& p_rhs) const
+	template <class... otherIteratorTypes>
+	bool zip_iterator<iteratorTypes...>::operator==(const zip_iterator<otherIteratorTypes...>& p_rhs) const
 	{
+		static_assert(sizeof...(iteratorTypes) == sizeof...(otherIteratorTypes));
 		return equality_impl(p_rhs.m_iterators, std::make_index_sequence<sizeof...(iteratorTypes)>{});
+	}
+
+	template <class... iteratorTypes>
+	template <class... otherIteratorTypes>
+	bool zip_iterator<iteratorTypes...>::operator!=(const zip_iterator<otherIteratorTypes...>& p_rhs) const
+	{
+		static_assert(sizeof...(iteratorTypes) == sizeof...(otherIteratorTypes));
+		return !(*this == p_rhs);
+	}
+
+	template <class... iteratorTypes>
+	auto zip_iterator<iteratorTypes...>::operator++() -> zip_iterator&
+	{
+		jkutil::tuple_map(m_iterators, [](auto& p_iterator)
+		{
+			++p_iterator;
+		});
+		return *this;
+	}
+
+	template <class... iteratorTypes>
+	auto zip_iterator<iteratorTypes...>::operator++(int) -> zip_iterator
+	{
+		zip_iterator copy(*this);
+		jkutil::tuple_map(m_iterators, [](auto& p_iterator)
+		{
+			p_iterator++;
+		});
+		return copy;
 	}
 
 	template <class... iteratorTypes>
 	auto zip_iterator<iteratorTypes...>::operator*() const -> reference 
 	{
-		return tuple_map_return(m_iterators, [](auto p_iterator) -> decltype(*p_iterator)
+		return jkutil::tuple_map_return(m_iterators, [](auto& p_iterator) -> decltype(*p_iterator)
 		{
 			return *p_iterator;
 		});
@@ -101,16 +127,17 @@ namespace jkutil
 	template<class... iteratorTypes>
 	inline auto zip_iterator<iteratorTypes...>::operator->() const -> pointer
 	{
-		return tuple_map_return(m_iterators, [](auto p_iterator) -> decltype(*p_iterator)
+		return jkutil::tuple_map_return(m_iterators, [](auto& p_iterator) -> decltype(jkutil::arrow_operator(p_iterator))
 		{
 			return jkutil::arrow_operator(p_iterator);
 		});
 	}
 
 	template <class... iteratorTypes>
-	template <std::size_t... indexValues>
-	bool zip_iterator<iteratorTypes...>::equality_impl(const std::tuple<iteratorTypes...>& p_rhs, std::index_sequence<indexValues...>) const
+	template <class... otherIteratorTypes, std::size_t... indexValues>
+	bool zip_iterator<iteratorTypes...>::equality_impl(const std::tuple<otherIteratorTypes...>& p_rhs, std::index_sequence<indexValues...>) const
 	{
+		static_assert(sizeof...(iteratorTypes) == sizeof...(otherIteratorTypes));
 		return (sizeof...(iteratorTypes) == 0) || ((std::get<indexValues>(m_iterators) == std::get<indexValues>(p_rhs)) || ...);
 	}
 
@@ -120,49 +147,43 @@ namespace jkutil
 		return zip_iterator<std::decay_t<iteratorTypes>...>(std::forward<iteratorTypes>(p_iterator)...);
 	}
 
-	template <class... zippedContainerTypes>
-	class zipper
+	template <class... rangeTypes>
+	class zip_range : public iterator_range<zip_iterator<decltype(std::declval<rangeTypes>().begin())...>, zip_iterator<decltype(std::declval<rangeTypes>().end())...>>
 	{
 	public:
 
-		using iterator = zip_iterator<std::conditional_t<std::is_const<zippedContainerTypes>::value, typename zippedContainerTypes::const_iterator, typename zippedContainerTypes::iterator>...>;
-
-		explicit zipper(zippedContainerTypes&... p_containers);
-
-		iterator begin() const;
-		iterator end() const;
-
-	private:
-
-		iterator m_begin;
-		iterator m_end;
+		explicit zip_range(const rangeTypes&... p_ranges);
+		explicit zip_range(rangeTypes&... p_ranges);
 
 	};
 
-	template <class... zippedContainerTypes>
-	zipper<zippedContainerTypes...>::zipper(zippedContainerTypes&... p_containers)
-		: m_begin(p_containers.begin()...),
-		m_end(p_containers.end()...)
+	template <class... rangeTypes>
+	inline zip_range<rangeTypes...>::zip_range(const rangeTypes&... p_ranges)
+		: iterator_range<zip_iterator<decltype(std::declval<rangeTypes>().begin())...>, zip_iterator<decltype(std::declval<rangeTypes>().end())...>>(
+			zip_iterator<decltype(std::declval<rangeTypes>().begin())...>(p_ranges.begin()...),
+			zip_iterator<decltype(std::declval<rangeTypes>().end())...>(p_ranges.end()...))
 	{
 
 	}
 
-	template <class... zippedContainerTypes>
-	auto zipper<zippedContainerTypes...>::begin() const -> iterator
+	template <class... rangeTypes>
+	inline zip_range<rangeTypes...>::zip_range(rangeTypes&... p_ranges)
+		: iterator_range<zip_iterator<decltype(std::declval(rangeTypes).begin())...>, zip_iterator<decltype(std::declval(rangeTypes).end())...>>(
+			zip_iterator<decltype(std::declval<rangeTypes>().begin())...>(p_ranges.begin()...),
+			zip_iterator<decltype(std::declval<rangeTypes>().end())...>(p_ranges.end()...))
 	{
-		return m_begin;
+
 	}
 
-	template <class... zippedContainerTypes>
-	auto zipper<zippedContainerTypes...>::end() const -> iterator
+	template <class... rangeTypes>
+	decltype(auto) make_zip_range(rangeTypes&... p_ranges)
 	{
-		return m_end;
-	}
-
-	template <class... containerTypes>
-	zipper<containerTypes...> make_zipper(containerTypes&... p_containers)
-	{
-		return zipper<containerTypes...>(p_containers...);
+		return zip_range<jkutil::iterator_range<
+			decltype(std::declval<rangeTypes>().begin()),
+			decltype(std::declval<rangeTypes>().end())>...>(
+				jkutil::iterator_range<
+					decltype(std::declval<rangeTypes>().begin()),
+					decltype(std::declval<rangeTypes>().end())>(p_ranges.begin(), p_ranges.end())...);
 	}
 
 }
