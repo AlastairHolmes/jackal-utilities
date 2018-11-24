@@ -48,10 +48,10 @@ namespace jkutil
 		array_proxy(std::nullptr_t) noexcept;
 		array_proxy(size_type p_count, pointer p_ptr) noexcept;
 
-		array_proxy(const array_proxy&) = default;
+		array_proxy(const array_proxy&) noexcept = default;
 		array_proxy(array_proxy&& p_instance) noexcept;
 
-		array_proxy& operator=(const array_proxy&) = default;
+		array_proxy& operator=(const array_proxy&) noexcept = default;
 		array_proxy& operator=(array_proxy&& p_rhs) noexcept;
 
 		void swap(array_proxy& p_rhs) noexcept;
@@ -112,7 +112,7 @@ namespace jkutil
 
 	template<typename elementType>
 	inline array_proxy<elementType>::array_proxy(size_type p_size, pointer p_data) noexcept
-		: m_size(p_size), m_data(p_data)
+		: m_size(p_size), m_data(p_size == 0 ? nullptr : p_data)
 	{
 		JKUTIL_ASSERT(p_size == 0 || p_data != nullptr);
 	}
