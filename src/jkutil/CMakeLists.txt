@@ -45,7 +45,7 @@ target_compile_features(JKUtil PUBLIC
 			"${CMAKE_CURRENT_LIST_DIR}/object_container.h"
 			"${CMAKE_CURRENT_LIST_DIR}/derived.h"
 			"${CMAKE_CURRENT_LIST_DIR}/vector.h"
-			"${CMAKE_CURRENT_LIST_DIR}/zipper.h")
+			"${CMAKE_CURRENT_LIST_DIR}/zip.h")
 
 	AddSourcesToTarget(JKUtil
 		GROUP "Header Files\\Allocators"
