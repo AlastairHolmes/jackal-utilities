@@ -15,7 +15,7 @@ namespace jkutil
 {
 
 	/*!
-		@brief Returns a value with all the bits, that are more or equally significant to the highest set bit in /p p_bits, set.
+		@brief Returns a value with all the bits, that are more or equally significant to the lowest set bit in /p p_bits, set.
 
 		@details Examples in 5 bits (For simplicity):
 		Input      | Output
@@ -28,51 +28,28 @@ namespace jkutil
 	constexpr std::uint32_t all_highest_bits(std::uint32_t p_bits)
 	{
 		std::uint32_t mask = p_bits;
-		mask |= mask >> 1;
-		mask |= mask >> 2;
-		mask |= mask >> 4;
-		mask |= mask >> 8;
-		mask |= mask >> 16;
+		mask |= mask << 1;
+		mask |= mask << 2;
+		mask |= mask << 4;
+		mask |= mask << 8;
+		mask |= mask << 16;
 		return mask;
 	}
 
 	constexpr std::uint64_t all_highest_bits(std::uint64_t p_bits)
 	{
 		std::uint64_t mask = p_bits;
-		mask |= mask >> 1;
-		mask |= mask >> 2;
-		mask |= mask >> 4;
-		mask |= mask >> 8;
-		mask |= mask >> 16;
-		mask |= mask >> 32;
+		mask |= mask << 1;
+		mask |= mask << 2;
+		mask |= mask << 4;
+		mask |= mask << 8;
+		mask |= mask << 16;
+		mask |= mask << 32;
 		return mask;
 	}
 
 	/*!
-		@brief Returns a value with only the highest value bit in \p p_bits set.
-
-		@details Examples in 5 bits (For simplicity):
-		Input      | Output
-		---------- | -------
-		01100 (12) | 01000
-		11111 (31) | 10000
-		00000 (0)  | 00000
-		00111 (7)  | 00100
-	*/
-	constexpr std::uint32_t set_highest_bit(std::uint32_t p_bits)
-	{
-		std::uint32_t temp = all_highest_bits(p_bits);
-		return temp ^ (temp >> 1);
-	}
-
-	constexpr std::uint64_t set_highest_bit(std::uint64_t p_bits)
-	{
-		std::uint64_t temp = all_highest_bits(p_bits);
-		return temp ^ (temp >> 1);
-	}
-
-	/*!
-		@brief Returns a value with all the bits, that are less or equally significant to the lowest set bit in \p p_bits, set.
+		@brief Returns a value with all the bits, that are less or equally significant to the highest set bit in \p p_bits, set.
 
 		@details Examples in 5 bits (For simplicity):
 		Input      | Output
@@ -85,24 +62,47 @@ namespace jkutil
 	constexpr std::uint32_t all_lowest_bits(std::uint32_t p_bits)
 	{
 		std::uint32_t mask = p_bits;
-		mask |= mask << 1;
-		mask |= mask << 2;
-		mask |= mask << 4;
-		mask |= mask << 8;
-		mask |= mask << 16;
+		mask |= mask >> 1;
+		mask |= mask >> 2;
+		mask |= mask >> 4;
+		mask |= mask >> 8;
+		mask |= mask >> 16;
 		return mask;
 	}
 
 	constexpr std::uint64_t all_lowest_bits(std::uint64_t p_bits)
 	{
 		std::uint64_t mask = p_bits;
-		mask |= mask << 1;
-		mask |= mask << 2;
-		mask |= mask << 4;
-		mask |= mask << 8;
-		mask |= mask << 16;
-		mask |= mask << 32;
+		mask |= mask >> 1;
+		mask |= mask >> 2;
+		mask |= mask >> 4;
+		mask |= mask >> 8;
+		mask |= mask >> 16;
+		mask |= mask >> 32;
 		return mask;
+	}
+
+	/*!
+	@brief Returns a value with only the highest value bit in \p p_bits set.
+
+	@details Examples in 5 bits (For simplicity):
+	Input      | Output
+	---------- | -------
+	01100 (12) | 01000
+	11111 (31) | 10000
+	00000 (0)  | 00000
+	00111 (7)  | 00100
+*/
+	constexpr std::uint32_t set_highest_bit(std::uint32_t p_bits)
+	{
+		std::uint32_t temp = all_lowest_bits(p_bits);
+		return temp ^ (temp >> 1);
+	}
+
+	constexpr std::uint64_t set_highest_bit(std::uint64_t p_bits)
+	{
+		std::uint64_t temp = all_lowest_bits(p_bits);
+		return temp ^ (temp >> 1);
 	}
 
 	/*!
@@ -118,13 +118,13 @@ namespace jkutil
 	*/
 	constexpr std::uint32_t set_lowest_bit(std::uint32_t p_bits)
 	{
-		std::uint32_t temp = all_lowest_bits(p_bits);
+		std::uint32_t temp = all_highest_bits(p_bits);
 		return temp ^ (temp << 1);
 	}
 
 	constexpr std::uint64_t set_lowest_bit(std::uint64_t p_bits)
 	{
-		std::uint64_t temp = all_lowest_bits(p_bits);
+		std::uint64_t temp = all_highest_bits(p_bits);
 		return temp ^ (temp << 1);
 	}
 
