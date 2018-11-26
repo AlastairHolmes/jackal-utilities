@@ -281,16 +281,16 @@ namespace jkutil
 	/*!
 		@fn std::uint32_t int_ceil_log2(std::uint32_t p_number)
 		@brief Calculates the log2 of a number. Rounds result UP to nearest integer.
-		@note int_log2(0) == 1, int_log2(1) == 1
+		@note int_log2(0) == 0, int_log2(1) == 0
 	*/
 	constexpr std::uint32_t int_ceil_log2(std::uint32_t p_number)
 	{
-		return p_number > 1 ? int_log2(p_number - 1) + 1 : 1;
+		return p_number > 1 ? int_log2(p_number - 1) + 1 : 0;
 	}
 
 	constexpr std::uint64_t int_ceil_log2(std::uint64_t p_number)
 	{
-		return p_number > 1 ? int_log2(p_number - 1) + 1 : 1;
+		return p_number > 1 ? int_log2(p_number - 1) + 1 : 0;
 	}
 
 }
