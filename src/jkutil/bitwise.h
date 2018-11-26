@@ -148,12 +148,12 @@ namespace jkutil
 	*/
 	constexpr std::uint32_t ceil_pow2(std::uint32_t p_number)
 	{
-		return set_highest_bit((p_number - 1) | 0x1) << 1;
+		return (p_number > 1) ? (set_highest_bit((p_number - 1)) << 1) : 1;
 	}
 
 	constexpr std::uint64_t ceil_pow2(std::uint64_t p_number)
 	{
-		return set_highest_bit((p_number - 1) | 0x1) << 1;
+		return (p_number > 1) ? (set_highest_bit((p_number - 1)) << 1) : 1;
 	}
 
 	/*!
