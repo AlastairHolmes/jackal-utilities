@@ -87,7 +87,7 @@ namespace jkutil
 
 	};
 
-	template <class baseType, class storableAllocatorType>
+	template <class baseType, class storableAllocatorType = jkutil::allocator>
 	class derived
 	{
 	private:
@@ -103,7 +103,7 @@ namespace jkutil
 		template <class otherStorableAllocatorType>
 		derived(derived<baseType, otherStorableAllocatorType>&& p_instance, const storableAllocatorType& p_allocator);
 
-		derived(const storableAllocatorType& p_allocator);
+		derived(const storableAllocatorType& p_allocator = storableAllocatorType());
 
 		derived(const derived&) = delete;
 		derived(derived&& p_instance);

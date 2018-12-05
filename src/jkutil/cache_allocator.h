@@ -31,7 +31,10 @@ namespace jkutil
 		using propagate_on_container_swap = std::bool_constant<propagateAllocator>;
 		using is_always_equal = typename allocatorType::is_always_equal;
 
-		using cache_element_t = void*;
+		struct cache_element_t
+		{
+			cache_element_t* m_next;
+		};
 
 	public:
 
@@ -128,13 +131,13 @@ namespace jkutil
 
 			if (m_cache != nullptr && m_element_size == p_size && p_alignment <= m_element_alignment)
 			{
-				cache_element_t temp = m_cache;
-				m_cache = *m_cache;
+				void* temp = m_cache;
+				m_cache = m_cache->m_next;
 				return temp;
 			}
 			else
 			{
-				jkutil::memory_allocate(m_allocator, p_size, p_alignment);
+				return jkutil::memory_allocate(m_allocator, p_size, p_alignment);
 			}
 		}
 
@@ -145,7 +148,7 @@ namespace jkutil
 			if (m_current_cache_size < m_maximum_cache_size && m_element_size == p_size && std::align(m_element_alignment,1,temp,temp_size) == p_ptr)
 			{
 				cache_element_t* temp = reinterpret_cast<cache_element_t*>(p_ptr);
-				*temp = m_cache;
+				temp->m_next = m_cache;
 				m_cache = temp;
 				++m_current_cache_size;
 			}
@@ -161,7 +164,7 @@ namespace jkutil
 			m_current_cache_size = 0;
 			while (m_cache != nullptr)
 			{
-				cache_element_t* temp = *reinterpret_cast<cache_element_t*>(m_cache);
+				cache_element_t* temp = m_cache->m_next;
 				jkutil::memory_deallocate(m_allocator, m_cache, m_element_size);
 				m_cache = temp;
 			}
@@ -178,7 +181,7 @@ namespace jkutil
 		std::size_t m_element_alignment;
 		std::size_t m_maximum_cache_size;
 		allocatorType m_allocator;
-		cache_element_t m_cache;
+		cache_element_t* m_cache;
 		std::size_t m_current_cache_size;
 
 	};
@@ -188,7 +191,10 @@ namespace jkutil
 	{
 	private:
 
-		using cache_element_t = void*;
+		struct cache_element_t
+		{
+			cache_element_t* m_next;
+		};
 
 	public:
 
@@ -282,13 +288,13 @@ namespace jkutil
 
 			if (m_cache != nullptr)
 			{
-				cache_element_t temp = m_cache;
-				m_cache = *m_cache;
+				cache_element_t* temp = m_cache;
+				m_cache = m_cache->m_next;
 				return temp;
 			}
 			else
 			{
-				jkutil::memory_allocate(m_allocator, m_element_size, m_element_alignment);
+				return jkutil::memory_allocate(m_allocator, m_element_size, m_element_alignment);
 			}
 		}
 
@@ -299,7 +305,7 @@ namespace jkutil
 			if (m_current_cache_size < m_maximum_cache_size)
 			{
 				cache_element_t* temp = reinterpret_cast<cache_element_t*>(p_ptr);
-				*temp = m_cache;
+				temp->m_next = m_cache;
 				m_cache = temp;
 				++m_current_cache_size;
 			}
@@ -315,7 +321,7 @@ namespace jkutil
 			m_current_cache_size = 0;
 			while (m_cache != nullptr)
 			{
-				cache_element_t* temp = *reinterpret_cast<cache_element_t*>(m_cache);
+				cache_element_t* temp = m_cache->m_next;
 				jkutil::memory_deallocate(m_allocator, m_cache, m_element_size);
 				m_cache = temp;
 			}
@@ -332,7 +338,7 @@ namespace jkutil
 		std::size_t m_element_alignment;
 		std::size_t m_maximum_cache_size;
 		allocatorType m_allocator;
-		cache_element_t m_cache;
+		cache_element_t* m_cache;
 		std::size_t m_current_cache_size;
 
 	};

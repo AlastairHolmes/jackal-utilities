@@ -73,7 +73,8 @@ target_compile_features(JKUtil PUBLIC
 		GROUP "Source Files\\Allocators"
 		SCOPE PRIVATE
 		FILES
-			"${CMAKE_CURRENT_LIST_DIR}/allocator.cpp")
+			"${CMAKE_CURRENT_LIST_DIR}/allocator.cpp"
+			"${CMAKE_CURRENT_LIST_DIR}/test_allocator.cpp")
 
 	AddSourcesToTarget(JKUtil
 		GROUP "Source Files\\Memory"

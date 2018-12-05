@@ -28,7 +28,7 @@ namespace jkutil
 		bucket_allocator(std::size_t p_buckets, std::size_t p_smallest_bucket, std::size_t p_bucket_power_step, bucketAllocatorMapConstructorCallable&& p_allocator_constructor, const fallbackAllocator& p_fallback_allocator)
 			: m_bucket_size_step(p_bucket_power_step == 0 ? 1 : p_bucket_power_step),
 			m_minimum_bucket_size(jkutil::downto_pow2(p_smallest_bucket)),
-			m_minimum_bucket_size_log(jkutil::int_log2(m_minimum_bucket_size))
+			m_minimum_bucket_size_log(jkutil::int_log2(m_minimum_bucket_size)),
 			m_buckets(),
 			m_fallback_allocator(p_fallback_allocator)
 		{
@@ -64,12 +64,12 @@ namespace jkutil
 
 		void* allocate(std::size_t p_size, std::size_t p_alignment)
 		{
-			std::size_t bucket_index = std::numeric_limits<std::size_t>::max();
+			std::size_t bucket_index = 0;
 			std::size_t log_size = jkutil::int_ceil_log2(p_size);
 
 			if (log_size > m_minimum_bucket_size_log)
 			{
-				bucket_index = (((log_size - m_minimum_bucket_size_log) - 1) / m_bucket_size_step) + 1;
+				bucket_index = (((log_size - m_minimum_bucket_size_log) - 1) / m_bucket_size_step) + 1; //(log_size - m_minimum_bucket_size_log) / m_bucket_size_step (ROUND UP)
 			}
 
 			return bucket_allocate(bucket_index, p_size, p_alignment);
@@ -77,12 +77,12 @@ namespace jkutil
 
 		void deallocate(void* p_ptr, std::size_t p_size)
 		{
-			std::size_t bucket_index = std::numeric_limits<std::size_t>::max();
+			std::size_t bucket_index = 0;
 			std::size_t log_size = jkutil::int_ceil_log2(p_size);
 
 			if (log_size > m_minimum_bucket_size_log)
 			{
-				bucket_index = (((log_size - m_minimum_bucket_size_log) - 1) / m_bucket_size_step) + 1;
+				bucket_index = (((log_size - m_minimum_bucket_size_log) - 1) / m_bucket_size_step) + 1; //(log_size - m_minimum_bucket_size_log) / m_bucket_size_step (ROUND UP)
 			}
 
 			bucket_deallocate(bucket_index, p_ptr, p_size);
@@ -110,20 +110,21 @@ namespace jkutil
 			{
 				std::size_t bucket_size = m_minimum_bucket_size << (p_bucket_index * m_bucket_size_step);
 				JKUTIL_ASSERT(bucket_size >= p_size);
-				return jkutil::memory_deallocate(m_buckets.at(p_bucket_index), p_ptr, bucket_size);
+				jkutil::memory_deallocate(m_buckets.at(p_bucket_index), p_ptr, bucket_size);
 			}
 			else
 			{
-				return jkutil::memory_deallocate(m_fallback_allocator, p_ptr, p_size);
+				jkutil::memory_deallocate(m_fallback_allocator, p_ptr, p_size);
 			}
 		}
 
 		static std::size_t calculate_bucket_count(std::size_t p_maximum_buckets, std::size_t p_minimum_bucket_size, std::size_t p_bucket_size_step)
 		{
 			JKUTIL_ASSERT(jkutil::is_pow2(p_minimum_bucket_size) && p_bucket_size_step > 0);
-			std::size_t log_min_bucket = jkutil::int_log2(p_minimum_bucket_size); //Note: Always, std::numeric_limits<std::size_t>::digits >= log_min_bucket
-			std::size_t bit_count = log_min_bucket + (p_maximum_buckets * m_bucket_size_step);
-			return (std::numeric_limits<std::size_t>::digits > bit_count) ? p_maximum_buckets : ((std::numeric_limits<std::size_t>::digits - log_min_bucket) / m_bucket_size_step);
+			std::size_t log_min_bucket = jkutil::int_log2(p_minimum_bucket_size); //Note: Always, std::numeric_limits<std::size_t>::digits > log_min_bucket
+			//lmb is the zero-based index of the minimum bucket.
+			std::size_t bit_count = log_min_bucket + (p_maximum_buckets * p_bucket_size_step) - 1; //bit_count is the zero-based index of the maximum bucket.
+			return (static_cast<std::size_t>(std::numeric_limits<std::size_t>::digits) > bit_count) ? p_maximum_buckets : ((static_cast<std::size_t>(std::numeric_limits<std::size_t>::digits) - log_min_bucket) / p_bucket_size_step);
 		}
 
 		std::size_t m_bucket_size_step;
