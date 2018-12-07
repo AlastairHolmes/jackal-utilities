@@ -234,8 +234,6 @@ namespace jkutil
 				set_container(p_rhs.container_move(get_abstract_allocator()));
 				p_rhs.reset();
 			}
-
-			JKUTIL_ASSERT(!has_self_reference());
 		}
 
 		return *this;
@@ -248,7 +246,6 @@ namespace jkutil
 		if (!is_same_instance(p_instance))
 		{
 			assign_value_operation(p_instance);
-			JKUTIL_ASSERT(!has_self_reference());
 		}
 		return *this;
 	}
@@ -320,8 +317,6 @@ namespace jkutil
 			{
 				swap_value(p_instance);
 			}
-
-			JKUTIL_ASSERT(!has_self_reference());
 		}
 	}
 
@@ -332,7 +327,6 @@ namespace jkutil
 		if (!is_same_instance(p_instance))
 		{
 			swap_value_operation(p_instance);
-			JKUTIL_ASSERT(!has_self_reference() && !p_instance.has_self_reference());
 		}
 	}
 
