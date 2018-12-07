@@ -17,6 +17,8 @@
 namespace jkutil
 {
 
+	//Self references are valid.
+
 	//Add copyable and moveable tests of elementType
 
 	//Stores an instance of any type derived from baseType (Publically inherits baseType).
@@ -292,8 +294,9 @@ namespace jkutil
 	{
 		if (m_container != nullptr)
 		{
-			m_container->destroy(get_abstract_allocator());
+			auto temp = m_container;
 			lose_container();
+			temp->destroy(get_abstract_allocator());
 		}
 	}
 
@@ -649,7 +652,6 @@ namespace jkutil
 		if (!is_same_instance(p_instance))
 		{
 			assign_value_operation(p_instance);
-			JKUTIL_ASSERT(!has_self_reference());
 		}
 		return *this;
 	}
@@ -661,7 +663,6 @@ namespace jkutil
 		if (!is_same_instance(p_instance))
 		{
 			assign_value_operation(p_instance);
-			JKUTIL_ASSERT(!has_self_reference());
 		}
 		return *this;
 	}
@@ -707,8 +708,9 @@ namespace jkutil
 	{
 		if (m_container != nullptr)
 		{
-			m_container->destroy(get_abstract_allocator());
+			auto temp = m_container;
 			lose_container();
+			temp->destroy(get_abstract_allocator());
 		}
 	}
 
@@ -732,8 +734,6 @@ namespace jkutil
 			{
 				swap_value(p_instance);
 			}
-
-			JKUTIL_ASSERT(!has_self_reference());
 		}
 	}
 
@@ -744,7 +744,6 @@ namespace jkutil
 		if (!is_same_instance(p_instance))
 		{
 			swap_value_operation(p_instance);
-			JKUTIL_ASSERT(!has_self_reference() && !p_instance.has_self_reference());
 		}
 	}
 
