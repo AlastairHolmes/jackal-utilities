@@ -284,6 +284,14 @@ namespace jkutil
 		return selective_iterator<std::decay_t<iteratorType>, std::decay_t<selectorCallableType>>(std::forward<iteratorType>(p_iterator), std::forward<iteratorType>(p_end_iterator), std::forward<selectorCallableType>(p_callable));
 	}
 
+	template <class rangeType, class selectorCallableType>
+	decltype(auto) make_selective_range(rangeType&& p_range, selectorCallableType&& p_callable)
+	{
+		return make_iterator_range(
+			make_selective_iterator(p_range.begin(), p_range.end(), std::forward<selectorCallableType>(p_callable)),
+			make_selective_iterator(p_range.end(), p_range.end(), std::forward<selectorCallableType>(p_callable)));
+	}
+
 }
 
 #endif
