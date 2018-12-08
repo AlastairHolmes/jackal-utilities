@@ -2,6 +2,8 @@
 AddLibrary(JKUtil STATIC)
 AddTargetToGroup(JKUtil JKUtil)
 
+set_target_properties(JKUtil PROPERTIES DEBUG_POSTFIX "-d")
+
 install(TARGETS JKUtil EXPORT JKUtil
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
